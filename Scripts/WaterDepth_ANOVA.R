@@ -42,6 +42,19 @@ hoc <- HSD.test(waterlevel, "Vegetation.type", group = TRUE, console = TRUE)
 plot(residuals(waterlevel)~fitted(waterlevel))
 
 
+Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Water),
+                                                             Water.sd = sd(Water),
+                                                             Water.min = min(Water),
+                                                             Water.max = max(Water))
+
+# Vegetation.type Year  Water.avg Water.sd Water.min Water.max
+# 1 Meadow          Five      10        6.16         0        16
+# 2 Meadow          Four       0        0            0         0
+# 3 Phragmites      Five      28.2     13.9          5        42
+# 4 Phragmites      Four       6.33     6.02         0        16
+# 5 Typha           Five      31.1      8.15        21        42
+# 6 Typha           Four       9.17    11.3          0        34
+
 
 ## Water depth figures
 
