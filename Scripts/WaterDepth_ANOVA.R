@@ -56,6 +56,14 @@ Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Wa
 # 6 Typha           Four       9.17    11.3          0        34
 
 
+Univariate %>% group_by(Year) %>% summarise(Water.avg = mean(Water),
+                                            Water.sd = sd(Water),
+                                            Water.min = min(Water),
+                                            Water.max = max(Water))
+
+
+
+
 ## Water depth figures
 
 Water <- ggplot(Univariate, aes(x = Vegetation.type, y = Water))
