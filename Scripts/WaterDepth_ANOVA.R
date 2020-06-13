@@ -7,12 +7,20 @@ library(tidyverse)
 library(car) ## ANOVA function
 library(Hmisc)
 
-Univariate <- read.csv("Data/2014_2015_univariate.csv")
-glimpse(Univariate)
+Data <- read.csv("Data/2014_2015_univariate.csv")
+str(Data)
 
-str(Univariate)
+colnames(Data)
+unique(Data$Vegetation.type)
 
-colnames(Univariate)
+
+Univariate <- Data %>% #rename the factors
+  mutate(Vegetation.type = fct_recode(Vegetation.type,
+                                      "Emergent" = "Typha",
+                                      "Invaded" = "Phragmites"))
+
+Univariate %>% count(Vegetation.type)
+
 
 #### Two-way ANOVA comparing water depths ####
 
@@ -61,7 +69,9 @@ Univariate %>% group_by(Year) %>% summarise(Water.avg = mean(Water),
                                             Water.min = min(Water),
                                             Water.max = max(Water))
 
-
+#Year  Water.avg Water.sd Water.min Water.max
+# 2015     23.9     13.2          0        42
+# 2014       5.57     8.49         0        34
 
 
 ## Water depth figures
@@ -90,3 +100,5 @@ WaterDepth <- Waters + scale_color_manual(values = c("#fc8d62","#1f78b4")) +
         axis.text.y = element_text(size = 14))
 
 WaterDepth 
+
+ggsave("Figures/Water Depth ANOVA.JPEG")
