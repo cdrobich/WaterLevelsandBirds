@@ -27,7 +27,7 @@ str(Univariate)
 
 
 
-#### Histograms
+#### Histograms ####
 
 par(mfrow = c(2,2))
 
@@ -51,7 +51,7 @@ hist(Univariate$MS,
      border = "black",
      col = "white")
 
-### transform variables
+#### transform variables ####
 
 Transform <- Univariate %>% mutate(logTS = log(TS),
                       logTab= log(Tab),
@@ -121,6 +121,7 @@ Anova(TAbANOVA2, type = "3")
 
 Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalAb.avg = mean(Tab),
                                                             TotalAb.sd = sd(Tab),
+                                                            TotalAb.med = median(Tab),
                                                             TotalAb.min = min(Tab),
                                                             TotalAb.max = max(Tab))
 
@@ -201,6 +202,7 @@ Anova(TSANOVA2, type = "3")
 
 Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalS.avg = mean(TS),
                                                             TotalS.sd = sd(TS),
+                                                            Total.med = median(TS),
                                                             TotalS.min = min(TS),
                                                             TotalS.max = max(TS))
 
