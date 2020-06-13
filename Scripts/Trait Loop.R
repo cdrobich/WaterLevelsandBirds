@@ -1,23 +1,25 @@
-setwd("C:/Users/cdrobich/Desktop/PhD/2014_2015 Birds/Data/NMS/Traits/nm RWBL")
-BSp<-read.csv("Species_betweenyears_28MAY17_nmrwbl.csv",row.names=1)
-BTrt<-read.csv("Traits_betweenyears_28MAY17_nmrwbl.csv", row.names=1)
+
+BSp<-read.csv("Data/Species_betweenyears_28MAY17_nmrwbl.csv",row.names=1)
+BTrt<-read.csv("Data/Traits_betweenyears_28MAY17_nmrwbl.csv", row.names=1)
 
 
 library(vegan)
 
 BSp<-BSp[,1:23] 
-BTrt
-BSp
+
+rownames(BTrt)
+colnames(BSp)
+
 
 # loop variables
-sites<-row.names(BSp)
-birds<-colnames(BSp)
-traits<-colnames(BTrt)
+sites <- row.names(BSp)
+birds <- colnames(BSp)
+traits <- colnames(BTrt)
 
 # output table
-Sum<-data.frame(matrix(as.numeric(0),ncol=length(traits),nrow=length(sites)))
-rownames(Sum)<-sites
-colnames(Sum)<-traits
+Sum <- data.frame(matrix(as.numeric(0),ncol = length(traits), nrow = length(sites)))
+rownames(Sum) <- sites
+colnames(Sum) <- traits
 
 
 # for loop
@@ -36,17 +38,7 @@ for (s in 1:length(sites)){                                       # Iterate acro
 
 
 # output
-write.csv(Sum,file = "C:/Users/cdrobich/Desktop/PhD/2014_2015 Birds/Data/NMS/Traits/nm RWBL/traits_matrix_between_28MAY17_nmrwbl_Routput.csv")
+
+write.csv(Sum, file = "Data/traits_matrix_between_28MAY17_nmrwbl_Routput.csv")
 
 
-# general rel by column
-
-Traits
-
-Trt5GR<-decostand(Traits, "max", MARGIN=2, na.rm=FALSE)
-Trt5GR
-
-write.table(Trt5GR, file = "C:/Users/cdrobich/Desktop/Bird Chapter 1/NMS 2015/Traits/without open water/traits_noOW_outliers_GR_27oct16_4REAL.csv")
-
-traitsnOW.pm<-adonis(TrtNOgr~veg_typ, data = Birdenv, permutations = 150, method = "bray")
-traitsnOW.pm
