@@ -1,5 +1,7 @@
 ## Scripts for doing things
 
-1. WaterDepth_ANOVA - compared the water depths between the years for all veg types
+* `WaterDepth_ANOVA.r` - compare water depths among veg. type between years; generates water depth figure
 
-2. BirdUnivariate_ANOVA - bunch of two way ANOVAs for univariate bird data
+* `BirdUnivariate_ANOVA.r` - two way ANOVAS comparing total abundance, total richness, marsh bird abundance, marsh bird species richness. Generates ANOVA panels
+
+* `Trait loop.r` - loop to generate the trait matrix (species abundance matrix x traits)
