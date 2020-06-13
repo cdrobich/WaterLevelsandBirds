@@ -309,10 +309,13 @@ MarshAbundance <- MarshAb + geom_jitter(
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14))
+        axis.text.y = element_text(size = 14)) +
+  ylim(0, 30)
 
 
 MarshAbundance
+
+
 
 
 #### Marsh Species Richness ANOVA w/ raw data ####
@@ -385,13 +388,14 @@ MarshRichness <- MarshS + geom_jitter(
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14)) 
+        axis.text.y = element_text(size = 14)) +
+  ylim(0, 10)
 
 
 MarshRichness
 
 
-## Panel
+#### Panel ####
 
 grid.arrange(TotalAbundance, MarshAbundance, TotalRichness, MarshRichness, nrow =2)
 
@@ -399,4 +403,4 @@ panel <- arrangeGrob(TotalAbundance, MarshAbundance, TotalRichness, MarshRichnes
 panel
 
 
-ggsave("Figures/BirdUnivariate_panels.jpeg")
+ggsave("Figures/BirdUnivariate_panels.jpeg", panel)
