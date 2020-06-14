@@ -22,6 +22,15 @@ Univariate <- Data %>% #rename the factors
 
 Univariate %>% count(Vegetation.type)
 
+
+Univariate <- Univariate %>% #rename the factors
+  mutate(Year = fct_recode(Year,
+                                      "2014" = "Four",
+                                      "2015" = "Five"))
+
+Univariate %>% count(Year)
+
+
 colnames(Univariate)
 str(Univariate)
 
