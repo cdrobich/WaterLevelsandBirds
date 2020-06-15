@@ -86,7 +86,7 @@ Axis1Fig <- ggplot(Species, aes(x = VegType, y = Axis1)) +
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 14),
+        axis.text.x = element_text(size = 14, angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank")
 
@@ -135,7 +135,7 @@ Axis2Fig <- ggplot(Species, aes(x = VegType, y = Axis2)) +
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 14),
+        axis.text.x = element_text(size = 14, angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank")
 
@@ -182,7 +182,7 @@ Axis3Fig <- ggplot(Species, aes(x = VegType, y = Axis3)) +
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 14),
+        axis.text.x = element_text(size = 14, angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank")
 
