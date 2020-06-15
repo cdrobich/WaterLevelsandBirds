@@ -197,8 +197,20 @@ Axis3Fig
 
 ### panels
 
-grid.arrange(Axis1Fig, Axis2Fig, Axis3Fig, ncol = 3)
+grid.arrange(Axis1Fig, Axis2Fig, Axis3Fig, legend, ncol = 4, widths = c(2.3, 2.3, 2.3, 0.8))
 
-coordinate <- arrangeGrob(Axis1Fig, Axis2Fig, Axis3Fig, ncol = 3)
+coordinate <- arrangeGrob(Axis1Fig, Axis2Fig, Axis3Fig, legend, ncol = 4, widths = c(2.3, 2.3, 2.3, 0.8))
 
 ggsave("Figures/Species NMDS coordinate ANOVAS.jpeg", coordinate)
+
+### get the legend 
+
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
+
+legend <- get_legend(Axis3Fig)
