@@ -1,11 +1,11 @@
 
-BSp<-read.csv("Data/Species_betweenyears_28MAY17_nmrwbl.csv",row.names=1)
+BSp<-read.csv("Data/Bird_community_composition.csv", row.names=1)
 BTrt<-read.csv("Data/Traits_betweenyears_28MAY17_nmrwbl.csv", row.names=1)
 
 
 library(vegan)
 
-BSp<-BSp[,1:23] 
+BSp<-BSp[,4:26] 
 
 rownames(BTrt)
 colnames(BSp)
@@ -39,6 +39,6 @@ for (s in 1:length(sites)){                                       # Iterate acro
 
 # output
 
-write.csv(Sum, file = "Data/traits_matrix_between_28MAY17_nmrwbl_Routput.csv")
+write.csv(Sum, file = "Data/traits_matrix_Routput.csv")
 
 
