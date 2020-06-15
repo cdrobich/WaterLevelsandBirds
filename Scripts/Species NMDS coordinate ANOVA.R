@@ -101,17 +101,23 @@ colnames(Species)
 
 Axis2ANOVA <- lm(Axis2 ~ VegYr, data = Species)
 
-
 Anova(Axis2ANOVA, type = "3")
-
-hoc <- HSD.test(Axis2ANOVA, "VegYr", group = TRUE, console = TRUE)
 
 # Response: Axis2
 #             Sum Sq Df F value  Pr(>F)   
 # (Intercept) 0.0157  1  0.0653 0.79980   
 # VegYr       4.5961  5  3.8207 0.00746 **
-# Residuals   8.1800 34                   
-                
+# Residuals   8.1800 34   
+
+hoc <- HSD.test(Axis2ANOVA, "VegYr", group = TRUE, console = TRUE)
+
+# Axis2 groups
+# Meadow_2015    0.39788333      a
+# Emergent_2015  0.37268750      a
+# Emergent_2014 -0.04432500     ab
+# Invaded_2015  -0.05896667     ab
+# Invaded_2014  -0.14893333     ab
+# Meadow_2014   -0.62788333      b
 
 plot(residuals(Axis2ANOVA)~fitted(Axis2ANOVA))
 
