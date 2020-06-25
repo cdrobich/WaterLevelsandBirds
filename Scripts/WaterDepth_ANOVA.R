@@ -17,7 +17,10 @@ unique(Data$Vegetation.type)
 Univariate <- Data %>% #rename the factors
   mutate(Vegetation.type = fct_recode(Vegetation.type,
                                       "Emergent" = "Typha",
-                                      "Invaded" = "Phragmites"))
+                                      "Invaded" = "Phragmites")) %>% 
+  mutate(Year = fct_recode(Year,
+                           "2014" = "Four",
+                           "2015" = "Five"))
 
 Univariate %>% count(Vegetation.type)
 
