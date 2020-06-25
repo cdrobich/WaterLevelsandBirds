@@ -18,7 +18,7 @@ unique(Data$Vegetation.type)
 Univariate <- Data %>% #rename the factors
   mutate(Vegetation.type = fct_recode(Vegetation.type,
                                       "Emergent" = "Typha",
-                                      "Invaded" = "Phragmites"))
+                                      "Invaded" = "Phragmites")) 
 
 Univariate %>% count(Vegetation.type)
 
@@ -27,6 +27,8 @@ Univariate <- Univariate %>% #rename the factors
   mutate(Year = fct_recode(Year,
                                       "2014" = "Four",
                                       "2015" = "Five"))
+
+Univariate$Year <- factor(Univariate$Year, levels = c("2014", "2015")) 
 
 Univariate %>% count(Year)
 
@@ -144,7 +146,7 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalAb.avg = mean(T
 #6 Emergent        Four         15.9       3.76          11          24
  
 
-## Total Abundance figures
+#### Total Abundance figures ####
 
 TotalAb <- ggplot(Transform, aes(x = Vegetation.type, y = Tab))
 
@@ -165,7 +167,8 @@ TotalAbundance <- TotalAb + geom_jitter(
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14))
+        axis.text.y = element_text(size = 14)) +
+  theme(legend.position = "blank")
 
 
 TotalAbundance
@@ -225,7 +228,7 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalS.avg = mean(TS
 #6 Emergent        Four        4.88     1.36           4          8
 
 
-## Total Species Richness figures
+#### Total Species Richness figures ####
 
 TotalS<- ggplot(Transform, aes(x = Vegetation.type, y = TS))
 
@@ -245,7 +248,8 @@ TotalRichness <- TotalS + geom_jitter(
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14))
+        axis.text.y = element_text(size = 14)) +
+  theme(legend.position = "blank")
 
 
 TotalRichness
@@ -300,7 +304,7 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(MarshAb.avg = mean(M
 
 
 
-## Total Species Richness figures
+#### Total Species Richness figures ####
 
 MarshAb <- ggplot(Transform, aes(x = Vegetation.type, y = Mab))
 
@@ -321,7 +325,8 @@ MarshAbundance <- MarshAb + geom_jitter(
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
-  ylim(0, 30)
+  ylim(0, 30) +
+  theme(legend.position = "blank")
 
 
 MarshAbundance
@@ -379,7 +384,7 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(MarshS.avg = mean(MS
 
 
 
-## Marsh Species Richness figures
+#### Marsh Species Richness figures ####
 
 MarshS <- ggplot(Transform, aes(x = Vegetation.type, y = MS))
 
@@ -400,18 +405,30 @@ MarshRichness <- MarshS + geom_jitter(
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
-  ylim(0, 10)
-
+  ylim(0, 10) 
 
 MarshRichness
 
 
 #### Panel ####
 
-grid.arrange(TotalAbundance, MarshAbundance, TotalRichness, MarshRichness, nrow =2)
+grid.arrange(TotalAbundance, TotalRichness, MarshAbundance, MarshRichness)
 
-panel <- arrangeGrob(TotalAbundance, MarshAbundance, TotalRichness, MarshRichness, nrow =2)
-panel
+panel <- arrangeGrob(TotalAbundance, TotalRichness, MarshAbundance, MarshRichness)
 
 
 ggsave("Figures/BirdUnivariate_panels.jpeg", panel)
+
+### get the legend 
+
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
+
+legend <- get_legend(TotalRichness)
+legend
+
