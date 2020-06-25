@@ -78,6 +78,7 @@ Univariate %>% group_by(Year) %>% summarise(Water.avg = mean(Water),
 
 
 ## Water depth figures
+Univariate$Year <- factor(Univariate$Year, levels = c("2014", "2015")) 
 
 Water <- ggplot(Univariate, aes(x = Vegetation.type, y = Water))
 
