@@ -59,18 +59,18 @@ hoc <- HSD.test(Axis1ANOVA, "VegYr", group = TRUE, console = TRUE)
 
 #Axis1 groups
 
-# Meadow_2015    0.8980333      a
+# Meadow_2015    0.8980333      b
 # Invaded_2014   0.1198500     ab
 # Emergent_2015  0.0934875     ab
-# Emergent_2014 -0.2155375      b
-# Invaded_2015  -0.2788667      b
-# Meadow_2014   -0.5762833      b
+# Emergent_2014 -0.2155375      a
+# Invaded_2015  -0.2788667      a
+# Meadow_2014   -0.5762833      a
 
 
 plot(residuals(Axis1ANOVA)~fitted(Axis1ANOVA))
 
 
-## Figure
+#### Figure AXIS1 ####
 colnames(Traits)
 
 Axis1Fig <- ggplot(Traits, aes(x = VegType, y = Axis1)) +
@@ -100,7 +100,7 @@ Axis1Fig
 
 
 
-#### Traits Axis 1 coordinate ANOVA ####
+#### Traits Axis 2 coordinate ANOVA ####
 colnames(Traits)
 
 Axis2ANOVA <- lm(Axis2 ~ VegYr, data = Traits)
@@ -116,7 +116,7 @@ Anova(Axis2ANOVA, type = "3")
 plot(residuals(Axis2ANOVA)~fitted(Axis2ANOVA))
 
 
-## Figure
+#### Figure Axis 2 ####
 colnames(Traits)
 
 Axis2Fig <- ggplot(Traits, aes(x = VegType, y = Axis2)) +
@@ -162,7 +162,7 @@ Anova(Axis3ANOVA, type = "3")
 plot(residuals(Axis3ANOVA)~fitted(Axis3ANOVA))
 
 
-## Figure
+#### Figure Axis 3 ####
 colnames(Traits)
 
 Axis3Fig <- ggplot(Traits, aes(x = VegType, y = Axis3)) +
