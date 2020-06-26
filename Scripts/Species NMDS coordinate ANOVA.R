@@ -97,7 +97,7 @@ Axis1Fig
 
 
 
-#### Species Axis 1 coordinate ANOVA ####
+#### Species Axis 2 coordinate ANOVA ####
 colnames(Species)
 
 Axis2ANOVA <- lm(Axis2 ~ VegYr, data = Species)
@@ -123,7 +123,7 @@ hoc <- HSD.test(Axis2ANOVA, "VegYr", group = TRUE, console = TRUE)
 plot(residuals(Axis2ANOVA)~fitted(Axis2ANOVA))
 
 
-## Figure
+##### Figure axis 2 ####
 colnames(Species)
 
 Axis2Fig <- ggplot(Species, aes(x = VegType, y = Axis2)) +
@@ -171,7 +171,7 @@ hoc <- HSD.test(Axis2ANOVA, "VegYr", group = TRUE, console = TRUE)
 plot(residuals(Axis3ANOVA)~fitted(Axis3ANOVA))
 
 
-## Figure
+##### Figure Axis 3 ####
 colnames(Species)
 
 Axis3Fig <- ggplot(Species, aes(x = VegType, y = Axis3)) +
