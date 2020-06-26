@@ -85,10 +85,11 @@ Axis1Fig <- ggplot(Species, aes(x = VegType, y = Axis1)) +
        y = expression(paste("NMDS Axis 1 Coordinates"))) + 
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 12),
         axis.text.x = element_text(size = 14, angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 14)) +
-  theme(legend.position = "blank")
+  theme(legend.position = "blank") +
+  ylim(-2, 2)
 
 Axis1Fig
 
@@ -140,10 +141,11 @@ Axis2Fig <- ggplot(Species, aes(x = VegType, y = Axis2)) +
        y = expression(paste("NMDS Axis 2 Coordinates"))) + 
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 12),
         axis.text.x = element_text(size = 14, angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 14)) +
-  theme(legend.position = "blank")
+  theme(legend.position = "blank") + 
+  ylim(-2, 2)
 
 Axis2Fig
 
@@ -187,19 +189,20 @@ Axis3Fig <- ggplot(Species, aes(x = VegType, y = Axis3)) +
        y = expression(paste("NMDS Axis 3 Coordinates"))) + 
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 12),
         axis.text.x = element_text(size = 14, angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 14)) +
-  theme(legend.position = "blank")
+  theme(legend.position = "blank") +
+  ylim(-2, 2)
 
 Axis3Fig
 
 
 ### panels
 
-grid.arrange(Axis1Fig, Axis2Fig, Axis3Fig, legend, ncol = 4, widths = c(2.3, 2.3, 2.3, 0.8))
+grid.arrange(Axis1Fig, Axis2Fig, Axis3Fig, legend, widths = c(2.3, 2.3, 2.3, 0.8))
 
-coordinate <- arrangeGrob(Axis1Fig, Axis2Fig, Axis3Fig, legend, ncol = 4, widths = c(2.3, 2.3, 2.3, 0.8))
+coordinate <- arrangeGrob(Axis1Fig, Axis2Fig, Axis3Fig, legend, widths = c(2.3, 2.3, 2.3, 0.8))
 
 ggsave("Figures/Species NMDS coordinate ANOVAS.jpeg", coordinate)
 
