@@ -54,9 +54,17 @@ Even <- ggplot(species, aes(x = VegType, y = Pielous)) +
        y = expression(paste("Pielou Evenness (J)"))) +
   ylim(0, 2) +
   theme(legend.position = "blank")
+Even
+Div
+
 
 
 grid.arrange(Div, Even, legend, ncol = 3, widths = c(2.3, 2.3, 0.8))
+
+alphadiversity <- arrangeGrob(Div, Even, legend, ncol = 3, widths = c(2.3, 2.3, 0.8))
+
+ggsave("Figures/Alphda diversity panel.jpeg", alphadiversity)
+
 
 get_legend<-function(myggplot){
   tmp <- ggplot_gtable(ggplot_build(myggplot))
