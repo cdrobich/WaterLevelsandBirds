@@ -1,4 +1,6 @@
 library(vegan)
+library(tidyverse)
+library(gridExtra)
 
 #### beta diversity  ####
 
@@ -29,18 +31,20 @@ species$Pielous <- H/log(specnumber(spp)) # Pielou's evenness
 hist(species$Shannon)
 hist(species$Pielous)
 
-ggplot(species, aes(x = VegType, y = Shannon)) +
+Div <- ggplot(species, aes(x = VegType, y = Shannon)) +
   geom_boxplot(aes(fill = Year), 
               position = position_dodge(0.9)) +
    theme_classic() +
   scale_fill_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
   labs(x = " ",
-       y = expression(paste("Shannon Diversity Index (H)")))
+       y = expression(paste("Shannon Diversity Index (H)")))  +
+  theme(legend.position = "blank") +
+  ylim(0, 2)
   
   
 
-ggplot(species, aes(x = VegType, y = Pielous)) +
+Even <- ggplot(species, aes(x = VegType, y = Pielous)) +
   geom_boxplot(aes(fill = Year), 
                position = position_dodge(0.9)) +
   theme_classic() +
@@ -48,5 +52,17 @@ ggplot(species, aes(x = VegType, y = Pielous)) +
   theme(panel.border = element_rect(fill = NA)) +
   labs(x = " ",
        y = expression(paste("Pielou Evenness (J)"))) +
-  ylim(0.5, 1.2)
+  ylim(0, 2) +
+  theme(legend.position = "blank")
 
+
+grid.arrange(Div, Even, legend, ncol = 3, widths = c(2.3, 2.3, 0.8))
+
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
+legend <- get_legend(Even)
