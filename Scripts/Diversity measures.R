@@ -114,6 +114,7 @@ BD2014 <- beta.div(spp2014bc, method = "percentdiff",
 Year2014$LCBD <- BD2014$LCBD
 
 BD2014$LCBD[BD2014$LCBD > mean(BD2014$LCBD)]
+
 #4           5           6           7           9          10         13         19 
 #0.12124900  0.06212209  0.05502379  0.07485454  0.05221660 0.05759652 0.05109404 0.05577960 
 
@@ -284,9 +285,10 @@ TBI1$BCD.mat
 
 compare2$TBI <- TBI1$BCD.mat
 compare2
+
+
 # C = gain, B = loss; B > C site has lost species between time 1 and 2 (-)
 
-# test difference that there is no sig. difference between times
 
 #B/(2A+B+C) C/(2A+B+C) D=(B+C)/(2A+B+C) Change
 #  Site.1  0.05714286  0.6000000        0.6571429    +  
@@ -310,6 +312,15 @@ compare2
 #  Site.19 0.12244898  0.1428571        0.2653061    +  
 #  Site.20 0.15909091  0.6136364        0.7727273    +  
 
+# test difference that there is no sig. difference between times
+
+#p.TBI
+# 0.179 0.153 0.916 0.017 0.641
+# 0.303 0.101 0.650 0.730 0.314 
+#0.950 0.837 0.439 0.692 0.537 
+# 0.371 0.531 0.739 0.984 0.049
+
+# only site 4 and site 20 are significant
 
 ## plot TBI
 str(compare2)
