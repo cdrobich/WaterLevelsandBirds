@@ -243,8 +243,6 @@ colnames(compare)
 
 compare2 <- compare %>% mutate(LCBDdiff = LCBD2015 - LCBD2014) 
 
-compare2$diff
-
 #Year2014.Site Year2014.VegType   LCBD2014   LCBD2015         diff
 #1        CM10_14           Meadow 0.04645560 0.05014927  0.003693677
 #2        CM19_14          Invaded 0.04315607 0.08997777  0.046821700
@@ -275,7 +273,6 @@ compare2$diff
 
 
 
-
 #### TBI ####
 
 TBI1 <- TBI(spp2014, spp2015, method = "%difference", nperm = 999, test.t.perm = FALSE)
@@ -284,8 +281,10 @@ TBI1
 TBI1$BCD.mat
 
 compare2$TBI <- TBI1$BCD.mat
+compare2$p.TBI <- TBI1$p.TBI
 compare2
 
+write.csv(compare2, "Data/LCBD_TBI_data.csv")
 
 # C = gain, B = loss; B > C site has lost species between time 1 and 2 (-)
 
