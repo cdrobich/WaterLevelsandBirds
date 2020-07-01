@@ -432,3 +432,8 @@ get_legend<-function(myggplot){
 legend <- get_legend(TotalRichness)
 legend
 
+## animation
+
+library(gganimate)
+
+# https://gganimate.com/articles/gganimate.html#your-first-animation-1
