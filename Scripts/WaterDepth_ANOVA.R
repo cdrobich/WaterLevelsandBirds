@@ -53,7 +53,7 @@ hoc <- HSD.test(waterlevel, "Vegetation.type", group = TRUE, console = TRUE)
 plot(residuals(waterlevel)~fitted(waterlevel))
 
 
-Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Water),
+Univariate %>% group_by(Vegetation.type) %>% summarise(Water.avg = mean(Water),
                                                              Water.sd = sd(Water),
                                                              Water.min = min(Water),
                                                              Water.max = max(Water))
@@ -85,7 +85,7 @@ Water <- ggplot(Univariate, aes(x = Vegetation.type, y = Water))
 Waters <- Water + geom_jitter(
   aes(shape = Year, color = Year), 
   position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.8),
-  size = 2) +
+  size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
@@ -100,9 +100,11 @@ Waters <- Water + geom_jitter(
 WaterDepth <- Waters + scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14))
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15))
 
 WaterDepth 
 
 ggsave("Figures/Water Depth ANOVA.JPEG")
+
+

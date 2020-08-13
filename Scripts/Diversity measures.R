@@ -1,6 +1,6 @@
 library(vegan)
 library(tidyverse)
-library(gridExtra)
+library(ggpubr)
 
 #### beta diversity  ####
 
@@ -79,10 +79,11 @@ get_legend<-function(myggplot){
 legend <- get_legend(Even)
 
 
-
 ####### Beta Diversity paritioning and TBI ######
 
 library(adespatial)
+install.packages("betapart")
+library(betapart)
 
 Year2014 <- species %>% filter(Year == "2014")
 Year2015 <- species %>% filter(Year == "2015")
@@ -107,13 +108,179 @@ spp2015bc
 
 ## beta diversity 
 
+## beta diversity and nestedness and turnover by veg x year 
+
+# seperate the groups
+
+meadow14 <- Year2014 %>% filter(VegType == "Meadow")
+phrag14 <- Year2014 %>% filter(VegType == "Invaded")
+emerg14 <- Year2014 %>% filter(VegType == "Emergent")
+
+meadow15 <- Year2015 %>% filter(VegType == "Meadow")
+phrag15 <- Year2015 %>% filter(VegType == "Invaded")
+emerg15 <- Year2015 %>% filter(VegType == "Emergent")
+
+### just species
+
+spp2014 <- Year2014[ ,5:27]
+
+meadow14sp <- meadow14[ , 5:27]
+meadow15sp <- meadow15[ , 5:27]
+
+phrag14sp <- phrag14[ ,5:27]
+phrag15sp <- phrag15[ ,5:27]
+
+emerg14sp <- emerg14[ ,5:27]
+emerg15sp <- emerg15[ ,5:27]
+
+## convert to presence absence
+
+meadow14sp[meadow14sp > 0] <- 1
+meadow15sp[meadow15sp > 0] <- 1
+
+phrag14sp[phrag14sp > 0] <- 1
+phrag15sp[phrag15sp > 0] <- 1
+
+emerg14sp[emerg14sp > 0] <- 1
+emerg15sp[emerg15sp > 0] <- 1
+
+
+## nestedness and turnover
+
+beta.multi(meadow14sp, index.family = "sorensen")
+#$beta.SIM - Turnover
+#[1] 0.40625
+
+#$beta.SNE - Nestedness
+#[1] 0.1002435
+
+#$beta.SOR - Overall value
+#[1] 0.5064935
+
+beta.multi(meadow15sp, index.family = "sorensen")
+
+#$beta.SIM - Turnover
+#[1] 0.5625
+
+#$beta.SNE - Nestedness
+#[1] 0.09394172
+
+#$beta.SOR - Sum
+#[1] 0.6564417
+
+beta.multi(phrag14sp, index.family = "sorensen")
+
+#$beta.SIM - Turnover
+#[1] 0.3947368
+
+#$beta.SNE - Nestedness
+#[1] 0.1832448
+
+#$beta.SOR - Sum
+#[1] 0.5779817
+
+beta.multi(phrag15sp, index.family = "sorensen")
+
+#$beta.SIM
+#[1] 0.28125
+
+#$beta.SNE
+#[1] 0.1508488
+
+#$beta.SOR
+#[1] 0.4320988
+
+beta.multi(emerg14sp, index.family = "sorensen")
+#$beta.SIM
+#[1] 0.4814815
+
+#$beta.SNE
+#[1] 0.1323116
+
+#$beta.SOR
+#[1] 0.6137931
+
+beta.multi(emerg15sp, index.family = "sorensen")
+
+#$beta.SIM
+#[1] 0.4464286
+
+#$beta.SNE
+#[1] 0.1429754
+
+#$beta.SOR
+#[1] 0.589404
+
+
+## made an excel file bc I am lazy; saved in data/betadiversity_output
+### turnover nestedness figures ####
+
+beta <- read.csv("Data/betadiversity_output.csv")
+beta$Year <- as.factor(beta$Year)
+beta$Vegetation <- factor(beta$Vegetation, levels = c("Meadow","Invaded", "Emergent")) 
+
+## Turnover
+turn.fig <- ggplot(beta, aes(x = Vegetation, y = Turn, fill = Year)) +
+  geom_col(color = "black", position = position_dodge()) +
+  labs(x = " ",
+       y = expression(paste("Turnover"))) +
+  theme_classic() +
+  ylim(0, 0.8) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15))+
+  scale_fill_manual(values = c("#fc8d62","#1f78b4"))
+
+turn.fig  
+
+
+# Nestedness
+
+nest.fig <- ggplot(beta, aes(x = Vegetation, y = Nest, fill = Year)) +
+  geom_col(color = "black", position = position_dodge()) +
+  labs(x = " ",
+       y = expression(paste("Nestedness"))) +
+  theme_classic() +
+  ylim(0, 0.3) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_fill_manual(values = c("#fc8d62","#1f78b4"))
+
+nest.fig 
+
+# sum
+
+sum.fig <- ggplot(beta, aes(x = Vegetation, y = Sum, fill = Year)) +
+  geom_col(color = "black", position = position_dodge()) +
+  labs(x = " ",
+       y = expression(paste("Sum"))) +
+  theme_classic() +
+  ylim(0, 0.8) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_fill_manual(values = c("#fc8d62","#1f78b4"))
+
+order <- ggarrange(nest.fig, turn.fig, sum.fig,
+                   ncol = 3, common.legend = TRUE, legend = "bottom")
+
+ggsave("Figures/BetaDiversity_partition.jpeg", order)
+
+## beta and LCBD
+
 BD2014 <- beta.div(spp2014bc, method = "percentdiff",
          sqrt.D = FALSE, samp = FALSE,
          nperm = 999)
 
+BD2014
+
 Year2014$LCBD <- BD2014$LCBD
 
-BD2014$LCBD[BD2014$LCBD > mean(BD2014$LCBD)]
+BD2014$LCBD[BD2014$LCBD > mean(BD2014$LCBD)] # LCBD > average
 
 #4           5           6           7           9          10         13         19 
 #0.12124900  0.06212209  0.05502379  0.07485454  0.05221660 0.05759652 0.05109404 0.05577960 
@@ -121,6 +288,8 @@ BD2014$LCBD[BD2014$LCBD > mean(BD2014$LCBD)]
 YearF <- ggplot(Year2014, aes(y = LCBD, x = VegType)) +
   geom_point() +
   theme_classic()
+
+YearF
 
 #Beta
 # max value of BD is 0.5
@@ -181,6 +350,8 @@ summary(check)
 
 Anova(check, type = "2")
 
+plot(residuals(check)~fitted(check))
+
 
 # Type III SS
 #VegType      0.0017365  2  2.3904   0.1068    
@@ -209,6 +380,19 @@ sum <- both_years %>% group_by(VegType, Year) %>%
 #4 Invaded  2015  0.0440  0.00836   0.0298   0.0541
 #5 Meadow   2014  0.0460  0.0167    0.0284   0.0749
 #6 Meadow   2015  0.0479  0.0231    0.0264   0.0900
+
+sum2 <- both_years %>% group_by(VegType) %>% 
+  summarise(Avg.LCBD = mean(LCBD),
+            sd.LCBD = sd(LCBD),
+            min.LCBD = min(LCBD),
+            max.LCBD = max(LCBD))
+sum2
+
+#VegType  Avg.LCBD sd.LCBD  min.LCBD  max.LCBD
+#<chr>       <dbl>   <dbl>    <dbl>    <dbl>
+#1 Emergent   0.0585  0.0220   0.0356   0.121 
+#2 Invaded    0.0417  0.0104   0.0215   0.0550
+#3 Meadow     0.0469  0.0193   0.0264   0.0900
 
 library(Hmisc)
 colnames(both_years)
@@ -311,7 +495,7 @@ write.csv(compare2, "Data/LCBD_TBI_data.csv")
 #  Site.19 0.12244898  0.1428571        0.2653061    +  
 #  Site.20 0.15909091  0.6136364        0.7727273    +  
 
-# test difference that there is no sig. difference between times
+# test that there is no sig. difference between times
 
 #p.TBI
 # 0.179 0.153 0.916 0.017 0.641
