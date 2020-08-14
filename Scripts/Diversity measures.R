@@ -84,6 +84,7 @@ legend <- get_legend(Even)
 library(adespatial)
 install.packages("betapart")
 library(betapart)
+citation("betapart")
 
 Year2014 <- species %>% filter(Year == "2014")
 Year2015 <- species %>% filter(Year == "2015")
@@ -242,7 +243,7 @@ nest.fig <- ggplot(beta, aes(x = Vegetation, y = Nest, fill = Year)) +
   labs(x = " ",
        y = expression(paste("Nestedness"))) +
   theme_classic() +
-  ylim(0, 0.3) +
+  ylim(0, 0.8) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
@@ -267,6 +268,7 @@ sum.fig <- ggplot(beta, aes(x = Vegetation, y = Sum, fill = Year)) +
 
 order <- ggarrange(nest.fig, turn.fig, sum.fig,
                    ncol = 3, common.legend = TRUE, legend = "bottom")
+order
 
 ggsave("Figures/BetaDiversity_partition.jpeg", order)
 
