@@ -270,6 +270,23 @@ sum.fig <- ggplot(beta, aes(x = Vegetation, y = Sum, fill = Year)) +
 
 sum.fig
 
+## test
+
+
+figure1 <- ggplot(beta, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.9), size = 4) +
+  labs(x = " ",
+       y = expression(paste("Sum"))) +
+  theme_classic() +
+  ylim(0, 1) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+figure1
+
 
 order <- ggarrange(nest.fig, turn.fig, sum.fig,
                    ncol = 3, common.legend = TRUE, legend = "right")
@@ -281,6 +298,13 @@ ggsave("Figures/BetaDiversity_partition.jpeg", order)
 ###### Null Models for Nestedness/Turnover/Beta #########
 
 library(picante)
+
+### someone else's code that is pretty
+
+do.call(rbind, lapply(1:2, function(i) {
+  x <-  randomizeMatrix(com.dat, null.model = "richness", iterations = 1000)
+  unlist(beta.multi.abund(x, index.family = "bray"))
+}))
 
 # a random value & confidence intervals - 
 # beta of each of 500 examples & take differences & CI 
@@ -535,7 +559,7 @@ sum.null <- ggplot(Beta.null.sum, aes(y = S.avg, x = Veg, fill = Year)) +
         axis.text.y = element_text(size = 15)) +
   scale_fill_manual(values = c("#bdbdbd","#636363")) +
   labs(x = " ",
-       y = expression(paste("Sum Beta Diversity (null)"))) +
+       y = expression(paste("Sum (null)"))) +
   ylim(0, 0.8)
 
 sum.null
@@ -547,6 +571,7 @@ order.null
 
 panel <- ggarrange(order, order.null,
           nrow = 2)
+panel
 
 ggsave("Figures/Beta_null_true.jpg", panel)
 
