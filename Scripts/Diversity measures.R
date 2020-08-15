@@ -327,13 +327,13 @@ sum.2014 <- bd14 %>%
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(n)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(n)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
             S.avg = mean(Sum),
             S.sd = sd(Sum),
-            S.CI = qnorm(0.95)*(S.sd/sqrt(n)))
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
 sum.2014
 
 # Meadow 2015 
@@ -341,13 +341,13 @@ sum.2015 <- bd15 %>%
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(n)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(n)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
             S.avg = mean(Sum),
             S.sd = sd(Sum),
-            S.CI = qnorm(0.95)*(S.sd/sqrt(n)))
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
 sum.2015
 
 meadow45 <- rbind(sum.2014, sum.2015)
@@ -386,13 +386,13 @@ inv.2014 <- inv14 %>%
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(n)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(n)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
             S.avg = mean(Sum),
             S.sd = sd(Sum),
-            S.CI = qnorm(0.95)*(S.sd/sqrt(n)))
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
 inv.2014
 
 # Invaded 2015 
@@ -400,13 +400,13 @@ inv.2015 <-inv15 %>%
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(n)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(n)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
             S.avg = mean(Sum),
             S.sd = sd(Sum),
-            S.CI = qnorm(0.95)*(S.sd/sqrt(n)))
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
 inv.2015
 
 inv45 <- rbind(inv.2014, inv.2015)
@@ -445,13 +445,13 @@ emg.2014 <- emg14 %>%
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(n)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(8)),
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(n)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(8)),
             S.avg = mean(Sum),
             S.sd = sd(Sum),
-            S.CI = qnorm(0.95)*(S.sd/sqrt(n)))
+            S.CI = qnorm(0.95)*(S.sd/sqrt(8)))
 emg.2014
 
 # Emergent 2015 
@@ -459,13 +459,13 @@ emg.2015 <- emg15 %>%
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(n)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(8)),
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(n)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(8)),
             S.avg = mean(Sum),
             S.sd = sd(Sum),
-            S.CI = qnorm(0.95)*(S.sd/sqrt(n)))
+            S.CI = qnorm(0.95)*(S.sd/sqrt(8)))
 emg.2015
 
 emerg45 <- rbind(emg.2014, emg.2015)
@@ -570,11 +570,11 @@ true.null$Vegetation <- factor(true.null$Vegetation , levels = c("Meadow","Invad
 
 # sum
 sum.figure <- ggplot(true.null, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
-  geom_point(position = position_dodge(0.6), size = 4) +
+  geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = S.avg - S.CI, ymax = S.avg + S.CI),
                 colour = "black",
                 size = 1,
-                width = 0.2,
+                width = 0.3,
                 position = position_dodge(0.6)) +
   labs(x = " ",
        y = expression(paste("Sum"))) +
@@ -591,11 +591,11 @@ sum.figure
 
 # nestedness 
 nest.figure <- ggplot(true.null, aes(x = Vegetation, y = Nest, colour = Year, shape = Year)) +
-  geom_point(position = position_dodge(0.6), size = 4) +
+  geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = N.avg - N.CI, ymax = N.avg + N.CI),
                 colour = "black",
                 size = 1,
-                width = 0.2,
+                width = 0.3,
                 position = position_dodge(0.6)) +
   labs(x = " ",
        y = expression(paste("Nestedness"))) +
@@ -611,11 +611,11 @@ nest.figure
 
 ## turnover
 turn.figure <- ggplot(true.null, aes(x = Vegetation, y = Turn, colour = Year, shape = Year)) +
-  geom_point(position = position_dodge(0.6), size = 4) +
+  geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = T.avg - T.CI, ymax = T.avg + T.CI),
                 colour = "black",
                 size = 1,
-                width = 0.2,
+                width = 0.3,
                 position = position_dodge(0.6)) +
   labs(x = " ",
        y = expression(paste("Turnover"))) +
