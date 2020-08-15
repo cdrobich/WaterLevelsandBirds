@@ -270,23 +270,7 @@ sum.fig <- ggplot(beta, aes(x = Vegetation, y = Sum, fill = Year)) +
 
 sum.fig
 
-## test
-
-
-figure1 <- ggplot(beta, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
-  geom_point(position = position_dodge(0.9), size = 4) +
-  labs(x = " ",
-       y = expression(paste("Sum"))) +
-  theme_classic() +
-  ylim(0, 1) +
-  theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 15),
-        axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
-
-figure1
-
+# put all three together
 
 order <- ggarrange(nest.fig, turn.fig, sum.fig,
                    ncol = 3, common.legend = TRUE, legend = "right")
@@ -575,7 +559,89 @@ panel
 
 ggsave("Figures/Beta_null_true.jpg", panel)
 
-########### Local Contribution to Beta Diversity ############
+
+###### Points and Null CI
+
+
+true.null <- read.csv("Data/betadiversity_true_null.csv")
+true.null
+true.null$Year <- as.factor(true.null$Year)
+true.null$Vegetation <- factor(true.null$Vegetation , levels = c("Meadow","Invaded", "Emergent")) 
+
+# sum
+sum.figure <- ggplot(true.null, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 4) +
+  geom_errorbar(aes(ymin = S.avg - S.CI, ymax = S.avg + S.CI),
+                colour = "black",
+                size = 1,
+                width = 0.2,
+                position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Sum"))) +
+  theme_classic() +
+  ylim(0, 0.8) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+sum.figure
+
+
+# nestedness 
+nest.figure <- ggplot(true.null, aes(x = Vegetation, y = Nest, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 4) +
+  geom_errorbar(aes(ymin = N.avg - N.CI, ymax = N.avg + N.CI),
+                colour = "black",
+                size = 1,
+                width = 0.2,
+                position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Nestedness"))) +
+  theme_classic() +
+  ylim(0, 0.8) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+nest.figure
+
+## turnover
+turn.figure <- ggplot(true.null, aes(x = Vegetation, y = Turn, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 4) +
+  geom_errorbar(aes(ymin = T.avg - T.CI, ymax = T.avg + T.CI),
+                colour = "black",
+                size = 1,
+                width = 0.2,
+                position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Turnover"))) +
+  theme_classic() +
+  ylim(0, 0.8) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+turn.figure
+
+
+
+
+null.points <- ggarrange(nest.figure, turn.figure, sum.figure,
+                        ncol = 3, common.legend = TRUE, legend = "bottom")
+
+null.points
+
+ggsave("Figures/beta_null_true_points.jpg", null.points)
+
+
+
+######### Local Contribution to Beta Diversity ############
 
 BD2014 <- beta.div(spp2014bc, method = "percentdiff",
          sqrt.D = FALSE, samp = FALSE,
