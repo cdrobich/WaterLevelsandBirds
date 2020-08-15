@@ -7,8 +7,9 @@ library(ggpubr)
 
 env <- read.csv("Data/Env_variables.csv")
 species <- read.csv("Data/Species matrix_raw.csv")
-###### Null Models for Nestedness/Turnover/Beta #########
 
+###### Null Models for Nestedness/Turnover/Beta #########
+library(betapart)
 library(picante)
 
 ### someone else's code that is pretty
@@ -368,3 +369,238 @@ null.points
 ggsave("Figures/beta_null_true_points.jpg", null.points)
 
 
+
+######### testing with gamma as the whole dataset
+
+###### Null with all Species (veg x year) #######
+species.pa <- species[,5:27]
+species.pa[species.pa > 0] <- 1
+
+
+# Create a results data frame for each veg x year data
+
+med14 <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+colnames(med14) <- c("Turnover","Nestedness","Sum")
+
+med15<-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+colnames(med15) <- c("Turnover","Nestedness","Sum")
+
+inv14 <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+colnames(inv14) <- c("Turnover","Nestedness","Sum")
+
+inv15<-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+colnames(inv15) <- c("Turnover","Nestedness","Sum")
+
+emg14 <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+colnames(emg14) <- c("Turnover","Nestedness","Sum")
+
+emg15<-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+colnames(emg15) <- c("Turnover","Nestedness","Sum")
+
+# loop beta diversity through each matrix 
+
+temp.cat <- species[,2:3]
+test <- species.pa 
+  
+test[,24:26] <- temp.cat
+
+
+
+for (i in 1:500){ #for 500 iterations
+  temp <- as.data.frame(randomizeMatrix(species.pa, null.model = "independentswap")) #Randomize the data
+  temp[,24:25] <- temp.cat
+  md14 <- temp %>% filter(VegType == "Meadow" & Year == "2014")
+  md15 <- temp %>% filter(VegType == "Meadow" & Year == "2015")
+  in14 <- temp %>% filter(VegType == "Invaded" & Year == "2014")
+  in15 <- temp %>% filter(VegType == "Invaded" & Year == "2015")
+  em14 <- temp %>% filter(VegType == "Emergent" & Year == "2014")
+  em15 <- temp %>% filter(VegType == "Emergent" & Year == "2015")
+  med14b <- beta.multi(md14[,1:23], index.family = "sorensen") #Run the beta diversity for each year's randomized data
+  med15b <- beta.multi(md15[,1:23], index.family = "sorensen")
+  inv14b <- beta.multi(in14[,1:23], index.family = "sorensen") #Run the beta diversity for each year's randomized data
+  inv15b <- beta.multi(in15[,1:23], index.family = "sorensen")
+  emg14b <- beta.multi(em14[,1:23], index.family = "sorensen") #Run the beta diversity for each year's randomized data
+  emg15b <- beta.multi(em15[,1:23], index.family = "sorensen")
+  med14[i,] <- data.frame(matrix(unlist(med14b), nrow = length(1), byrow = T)) #Put the beta results in the correct results df
+  med15[i,] <- data.frame(matrix(unlist(med15b), nrow = length(1), byrow = T))
+  inv14[i,] <- data.frame(matrix(unlist(inv14b), nrow = length(1), byrow = T)) #Put the beta results in the correct results df
+  inv15[i,] <- data.frame(matrix(unlist(inv15b), nrow = length(1), byrow = T))
+  emg14[i,] <- data.frame(matrix(unlist(emg14b), nrow = length(1), byrow = T)) #Put the beta results in the correct results df
+  emg15[i,] <- data.frame(matrix(unlist(emg15b), nrow = length(1), byrow = T))
+}
+
+# Meadow 2014
+m.2014 <- med14 %>% 
+  summarise(n = n(),
+            N.avg = mean(Nestedness),
+            N.sd = sd(Nestedness),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
+            T.avg = mean(Turnover),
+            T.sd = sd(Turnover),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
+            S.avg = mean(Sum),
+            S.sd = sd(Sum),
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
+m.2014
+
+# Meadow 2015
+m.2015 <- med15 %>% 
+  summarise(n = n(),
+            N.avg = mean(Nestedness),
+            N.sd = sd(Nestedness),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
+            T.avg = mean(Turnover),
+            T.sd = sd(Turnover),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
+            S.avg = mean(Sum),
+            S.sd = sd(Sum),
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
+m.2015
+
+meadow <- rbind(m.2014, m.2015)
+
+# Invaded 2014
+i.2014 <- inv14 %>% 
+  summarise(n = n(),
+            N.avg = mean(Nestedness),
+            N.sd = sd(Nestedness),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
+            T.avg = mean(Turnover),
+            T.sd = sd(Turnover),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
+            S.avg = mean(Sum),
+            S.sd = sd(Sum),
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
+i.2014
+
+# Invaded 2015
+i.2015 <- inv15 %>% 
+  summarise(n = n(),
+            N.avg = mean(Nestedness),
+            N.sd = sd(Nestedness),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
+            T.avg = mean(Turnover),
+            T.sd = sd(Turnover),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
+            S.avg = mean(Sum),
+            S.sd = sd(Sum),
+            S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
+i.2015
+
+invaded <- rbind(e.2014, e.2015)
+
+# Emergent 2014
+e.2014 <- emg14 %>% 
+  summarise(n = n(),
+            N.avg = mean(Nestedness),
+            N.sd = sd(Nestedness),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(8)),
+            T.avg = mean(Turnover),
+            T.sd = sd(Turnover),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(8)),
+            S.avg = mean(Sum),
+            S.sd = sd(Sum),
+            S.CI = qnorm(0.95)*(S.sd/sqrt(8)))
+e.2014
+
+# Emergent 2014
+e.2015 <- emg15 %>% 
+  summarise(n = n(),
+            N.avg = mean(Nestedness),
+            N.sd = sd(Nestedness),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(8)),
+            T.avg = mean(Turnover),
+            T.sd = sd(Turnover),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(8)),
+            S.avg = mean(Sum),
+            S.sd = sd(Sum),
+            S.CI = qnorm(0.95)*(S.sd/sqrt(8)))
+e.2015
+
+emergent <- rbind(e.2014, e.2015)
+
+reference <- rbind(emergent, meadow)
+all.null <- rbind(reference, invaded)
+
+all.null$Vegetation <- c("Emergent","Emergent","Meadow","Meadow","Invaded","Invaded")
+all.null$Year <- as.factor(c("2014","2015","2014","2015","2014","2015"))
+all.null$Turn <- as.numeric(c("0.481","0.446","0.406","0.563","0.395","0.281"))
+all.null$Nest <- as.numeric(c("0.132","0.143","0.1","0.094","0.183","0.151"))
+all.null$Sum <- as.numeric(c("0.614","0.589","0.506","0.656","0.578","0.432"))
+
+colnames(all.null)
+str(all.null)
+
+all.null
+
+## Turnover
+
+turn.fig <- ggplot(all.null, aes(x = Vegetation, y = Turn, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 5) +
+  geom_errorbar(aes(ymin = T.avg - T.CI, ymax = T.avg + T.CI),
+                colour = "black",
+                size = 1,
+                width = 0.3,
+                position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Turnover"))) +
+  theme_classic() +
+  ylim(0, 1) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+turn.fig
+
+### Sum 
+
+sum.fig <- ggplot(all.null, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 5) +
+  geom_errorbar(aes(ymin = S.avg - S.CI, ymax = S.avg + S.CI),
+                colour = "black",
+                size = 1,
+                width = 0.3,
+                position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Sum"))) +
+  theme_classic() +
+  ylim(0, 1) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+sum.fig
+
+
+# nestedness 
+nest.fig <- ggplot(all.null, aes(x = Vegetation, y = Nest, colour = Year, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 5) +
+  geom_errorbar(aes(ymin = N.avg - N.CI, ymax = N.avg + N.CI),
+                colour = "black",
+                size = 1,
+                width = 0.3,
+                position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Nestedness"))) +
+  theme_classic() +
+  ylim(0, 1) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+
+nest.fig
+
+
+
+null.fig.panel <- ggarrange(sum.fig, nest.fig, turn.fig,
+                         ncol = 3, common.legend = TRUE, legend = "bottom")
+
+ggarrange(null.fig.panel, null.points,
+          nrow = 2,
+          labels = "AUTO")
