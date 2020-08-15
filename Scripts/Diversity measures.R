@@ -579,7 +579,7 @@ sum.figure <- ggplot(true.null, aes(x = Vegetation, y = Sum, colour = Year, shap
   labs(x = " ",
        y = expression(paste("Sum"))) +
   theme_classic() +
-  ylim(0, 0.8) +
+  ylim(0, 1) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
@@ -600,7 +600,7 @@ nest.figure <- ggplot(true.null, aes(x = Vegetation, y = Nest, colour = Year, sh
   labs(x = " ",
        y = expression(paste("Nestedness"))) +
   theme_classic() +
-  ylim(0, 0.8) +
+  ylim(0, 1) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
@@ -620,7 +620,7 @@ turn.figure <- ggplot(true.null, aes(x = Vegetation, y = Turn, colour = Year, sh
   labs(x = " ",
        y = expression(paste("Turnover"))) +
   theme_classic() +
-  ylim(0, 0.8) +
+  ylim(0, 1) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
