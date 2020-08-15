@@ -632,7 +632,7 @@ turn.figure
 
 
 
-null.points <- ggarrange(nest.figure, turn.figure, sum.figure,
+null.points <- ggarrange(sum.figure, nest.figure, turn.figure,
                         ncol = 3, common.legend = TRUE, legend = "bottom")
 
 null.points
