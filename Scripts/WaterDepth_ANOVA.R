@@ -6,6 +6,7 @@ library(agricolae) #skewness, kurtosis, Tukeys
 library(tidyverse)
 library(car) ## ANOVA function
 library(Hmisc)
+library(ggpubr)
 
 Data <- read.csv("Data/2014_2015_univariate.csv")
 str(Data)
@@ -67,10 +68,19 @@ Univariate %>% group_by(Vegetation.type) %>% summarise(Water.avg = mean(Water),
 # 6 Typha           Four       9.17    11.3          0        34
 
 
-Univariate %>% group_by(Year) %>% summarise(Water.avg = mean(Water),
+Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Water),
                                             Water.sd = sd(Water),
                                             Water.min = min(Water),
-                                            Water.max = max(Water))
+                                            Water.max = max(Water),
+                                            range = (Water.max - Water.min))
+
+#Vegetation.type    Year  Water.avg  Water.sd  Water.min  Water.max  range
+# 1 Meadow         2015      10        6.16         0        16    16
+#2 Meadow          2014       0        0            0         0     0
+#3 Invaded         2015      28.2     13.9          5        42    37
+#4 Invaded         2014       6.33     6.02         0        16    16
+#5 Emergent        2015      31.1      8.15        21        42    21
+#6 Emergent        2014       9.17    11.3          0        34    34
 
 #Year  Water.avg Water.sd Water.min Water.max
 # 2015     23.9     13.2          0        42
@@ -100,11 +110,45 @@ Waters <- Water + geom_jitter(
 WaterDepth <- Waters + scale_color_manual(values = c("#fc8d62","#1f78b4")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 15),
-        axis.text.y = element_text(size = 15))
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16))
 
 WaterDepth 
 
 ggsave("Figures/Water Depth ANOVA.JPEG")
 
+################ Lake Erie ######
 
+erie <- read.csv("Data/lakeerie_2014_2015.csv")
+erie
+colnames(erie)
+
+erie$Year <- as.factor(erie$Year)
+erie$Month <- factor(erie$Month, levels = c("May","June", "July ", "August"))
+
+erie.figure <- ggplot(data = erie, aes(x = Month, y = Average, group = Year, 
+                                       colour = Year, shape = Year)) +
+  geom_line() +
+  geom_point(size = 5) +
+  theme_classic(base_size = 16) +
+  theme(panel.border = element_rect(fill = NA)) +
+  xlab(" ") +
+  ylim(174.0, 175.0) +
+  ylab("Lake Erie Depth relative to IGLD 1985 (m) ") +
+  theme(axis.text = element_text(size = 16),
+        axis.text.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15)) +
+  scale_color_manual(values = c("#fc8d62","#1f78b4"))
+
+erie.figure
+
+ggsave("Figures/Lake Erie.JPEG")
+
+
+water.panel <- ggarrange(WaterDepth, erie.figure,
+                           common.legend = TRUE, 
+                         legend = "bottom")
+                         
+water.panel
+
+ggsave("Figures/Sites_Erie.JPEG")
