@@ -7,7 +7,7 @@ library(ggpubr)
 
 
 species <- read.csv("Data/Species matrix_raw.csv")
-
+species
 
 ###### Null Models for Nestedness/Turnover/Beta #########
 
@@ -39,16 +39,16 @@ m.cat
 
 # Create a results data frame for each veg x year data
 
-med14v <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+med14v <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(med14v) <- c("Turnover","Nestedness","Sum")
 
-med15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+med15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(med15v) <- c("Turnover","Nestedness","Sum")
 
 
 ####### Meadow Null model ########
 
-for (i in 1:500){ #for 500 iterations
+for (i in 1:1000){ #for 500 iterations
   tempm <- as.data.frame(randomizeMatrix(species.m, null.model = "independentswap")) #Randomize the data
   tempm[,24] <- m.cat
   md14v <- tempm %>% filter(V24 == "2014")
@@ -95,10 +95,10 @@ meadow
 
 ###### Invaded Null model ########
 
-inv14v <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+inv14v <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(inv14v) <- c("Turnover","Nestedness","Sum")
 
-inv15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+inv15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(inv15v) <- c("Turnover","Nestedness","Sum")
 
 ## create data frame
@@ -111,7 +111,7 @@ i.cat <- species.inv[,2] # take out the year
 i.cat
 
 
-for (i in 1:500){ #for 500 iterations
+for (i in 1:1000){ #for 500 iterations
   tempi <- as.data.frame(randomizeMatrix(species.i, null.model = "independentswap")) #Randomize the data
   tempi[,24] <- i.cat
   in14v <- tempi %>% filter(V24 == "2014")
@@ -158,10 +158,10 @@ invaded
 
 ###### Emergent Null model ########
 
-emg14v <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+emg14v <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(emg14v) <- c("Turnover","Nestedness","Sum")
 
-emg15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(500)))
+emg15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(emg15v) <- c("Turnover","Nestedness","Sum")
 
 ## create data frame
@@ -174,7 +174,7 @@ e.cat <- species.emg[,2] # take out the year
 e.cat
 
 
-for (i in 1:500){ #for 500 iterations
+for (i in 1:1000){ #for 500 iterations
   tempe <- as.data.frame(randomizeMatrix(species.e, null.model = "independentswap")) #Randomize the data
   tempe[,24] <- e.cat
   em14v <- tempe %>% filter(V24 == "2014")
