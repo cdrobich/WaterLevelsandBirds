@@ -62,7 +62,6 @@ Even
 Div
 
 
-
 grid.arrange(Div, Even, legend, ncol = 3, widths = c(2.3, 2.3, 0.8))
 
 alphadiversity <- arrangeGrob(Div, Even, legend, ncol = 3, widths = c(2.3, 2.3, 0.8))
@@ -84,6 +83,7 @@ legend <- get_legend(Even)
 
 library(adespatial)
 library(betapart)
+
 citation("betapart")
 
 Year2014 <- species %>% filter(Year == "2014")
@@ -148,7 +148,14 @@ emerg15sp[emerg15sp > 0] <- 1
 
 ### Nestedness and Turnover ####
 
-beta.multi(meadow14sp, index.family = "sorensen")
+beta <- data.frame(matrix(as.numeric(0), ncol=(3), nrow=(6)))
+colnames(beta) <- c("Turnover","Nestedness","Sum")
+
+
+m14.bd <- beta.multi(meadow14sp, index.family = "sorensen")
+m14.bd
+beta[1,] <- data.frame(matrix(unlist(m14.bd), nrow = length(1), byrow = T))
+
 #$beta.SIM - Turnover
 #[1] 0.40625
 
@@ -158,7 +165,9 @@ beta.multi(meadow14sp, index.family = "sorensen")
 #$beta.SOR - Overall value
 #[1] 0.5064935
 
-beta.multi(meadow15sp, index.family = "sorensen")
+m15.bd <- beta.multi(meadow15sp, index.family = "sorensen")
+m15.bd
+beta[2,] <- data.frame(matrix(unlist(m15.bd), nrow = length(1), byrow = T))
 
 #$beta.SIM - Turnover
 #[1] 0.5625
@@ -169,7 +178,9 @@ beta.multi(meadow15sp, index.family = "sorensen")
 #$beta.SOR - Sum
 #[1] 0.6564417
 
-beta.multi(phrag14sp, index.family = "sorensen")
+inv14.bd <- beta.multi(phrag14sp, index.family = "sorensen")
+inv14.bd
+beta[3,] <- data.frame(matrix(unlist(inv14.bd), nrow = length(1), byrow = T))
 
 #$beta.SIM - Turnover
 #[1] 0.3947368
@@ -180,7 +191,10 @@ beta.multi(phrag14sp, index.family = "sorensen")
 #$beta.SOR - Sum
 #[1] 0.5779817
 
-beta.multi(phrag15sp, index.family = "sorensen")
+inv15.bd <- beta.multi(phrag15sp, index.family = "sorensen")
+inv15.bd
+beta[4,] <- data.frame(matrix(unlist(inv15.bd), nrow = length(1), byrow = T))
+
 
 #$beta.SIM
 #[1] 0.28125
@@ -191,7 +205,9 @@ beta.multi(phrag15sp, index.family = "sorensen")
 #$beta.SOR
 #[1] 0.4320988
 
-beta.multi(emerg14sp, index.family = "sorensen")
+emg14.bd <- beta.multi(emerg14sp, index.family = "sorensen")
+beta[5,] <- data.frame(matrix(unlist(emg14.bd), nrow = length(1), byrow = T))
+
 #$beta.SIM
 #[1] 0.4814815
 
@@ -201,7 +217,9 @@ beta.multi(emerg14sp, index.family = "sorensen")
 #$beta.SOR
 #[1] 0.6137931
 
-beta.multi(emerg15sp, index.family = "sorensen")
+emg15.bd <- beta.multi(emerg15sp, index.family = "sorensen")
+beta[6,] <- data.frame(matrix(unlist(emg15.bd), nrow = length(1), byrow = T))
+
 
 #$beta.SIM
 #[1] 0.4464286
@@ -212,16 +230,12 @@ beta.multi(emerg15sp, index.family = "sorensen")
 #$beta.SOR
 #[1] 0.589404
 
-
-## made an excel file bc I am lazy; saved in data/betadiversity_output
-### turnover nestedness figures ####
-
-beta <- read.csv("Data/betadiversity_output.csv")
-beta$Year <- as.factor(beta$Year)
-beta$Vegetation <- factor(beta$Vegetation, levels = c("Meadow","Invaded", "Emergent")) 
+beta$Vegetation <- as.factor(c("Meadow", "Meadow", "Invaded", "Invaded", "Emergent", "Emergent"))
+beta$Year <- as.factor(c("2014","2015","2014","2015","2014","2015"))  
+beta$N <- c("6","6","6","6","8","8")  
 
 ## Turnover
-turn.fig <- ggplot(beta, aes(x = Vegetation, y = Turn, fill = Year)) +
+turn.fig <- ggplot(beta, aes(x = Vegetation, y = Turnover, fill = Year)) +
   geom_col(color = "black", position = position_dodge()) +
   labs(x = " ",
        y = expression(paste("Turnover"))) +
@@ -239,7 +253,7 @@ turn.fig
 
 # Nestedness
 
-nest.fig <- ggplot(beta, aes(x = Vegetation, y = Nest, fill = Year)) +
+nest.fig <- ggplot(beta, aes(x = Vegetation, y = Nestedness, fill = Year)) +
   geom_col(color = "black", position = position_dodge()) +
   labs(x = " ",
        y = expression(paste("Nestedness"))) +
