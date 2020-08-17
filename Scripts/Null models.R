@@ -212,18 +212,18 @@ emergent
 ########## Put all the data together ###########
 reference <- rbind(emergent, meadow)
 all.null <- rbind(reference, invaded)
-all.null
+all.null # but together all the results 
 
-all.null$Turn <- as.numeric(c("0.481","0.446","0.406","0.563","0.395","0.281")) # add in the real data
+all.null$Turn <- as.numeric(c("0.481","0.446","0.406","0.563","0.395","0.281")) # add in the real data (from `Diversity measures`)
 all.null$Nest <- as.numeric(c("0.132","0.143","0.1","0.094","0.183","0.151"))
 all.null$Sum <- as.numeric(c("0.614","0.589","0.506","0.656","0.578","0.432"))
 
-all.null$Vegetation <- factor(all.null$Vegetation, levels = c("Meadow","Invaded", "Emergent")) # reorder the factor
+all.null$Vegetation <- factor(all.null$Vegetation, levels = c("Meadow","Invaded", "Emergent")) # reorder for figure
 
 write.csv(all.null, "Data/Beta_null_true.csv")
 
 
-###### Points and Null CI
+###### Figures, points for real data and null model error bars ########
 
 str(all.null)
 
@@ -299,6 +299,7 @@ ggsave("Figures/beta_null_true_points.jpg", null.points)
 
 
 ######### testing with gamma as the whole dataset
+# Don't need to do this because there is an interaction but tried it anyway
 
 ###### Null with all Species (veg x year) #######
 species.pa <- species[,5:27]
