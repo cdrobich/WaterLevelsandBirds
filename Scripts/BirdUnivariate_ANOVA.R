@@ -149,18 +149,17 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalAb.avg = mean(T
 
 #### Total Abundance figures ####
 
-TotalAb <- ggplot(Transform, aes(x = Vegetation.type, y = Tab))
-
-TotalAbundance <- TotalAb + geom_jitter(
+TotalAbundance <- ggplot(Transform, aes(x = Vegetation.type, y = Tab)) + 
+  geom_jitter(
   aes(shape = Year, color = Year), 
-  position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.8),
+  position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
   size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_sdl", fun.args = list(mult = 1),
     geom = "pointrange", size = 0.6,
-    position = position_dodge(0.8)
+    position = position_dodge(0.6)
   ) +
   labs(x = " ",
        y = expression(paste("Total Bird Abundance"))) + 
@@ -233,14 +232,14 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalS.avg = mean(TS
 
 TotalRichness <- ggplot(Transform, aes(x = Vegetation.type, y = TS)) +
   geom_jitter(aes(shape = Year, color = Year), 
-  position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.8),
+  position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
   size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_sdl", fun.args = list(mult = 1),
     geom = "pointrange", size = 0.6,
-    position = position_dodge(0.8)) +
+    position = position_dodge(0.6)) +
   labs(x = " ",
        y = expression(paste("Total Bird Species Richness"))) + 
   scale_color_manual(values = c("#fc8d62","#1f78b4")) +
