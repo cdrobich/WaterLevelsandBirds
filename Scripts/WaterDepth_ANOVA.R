@@ -135,8 +135,8 @@ erie.figure <- ggplot(data = erie, aes(x = Month, y = Average, group = Year,
   xlab(" ") +
   ylim(174.0, 175.0) +
   ylab("Lake Erie Depth relative to IGLD 1985 (m) ") +
-  theme(axis.text = element_text(size = 16),
-        axis.text.x = element_text(size = 15),
+  theme(axis.text = element_text(size = 13),
+        axis.text.x = element_text(size = 16),
         axis.title.y = element_text(size = 15)) +
   scale_color_manual(values = c("#fc8d62","#1f78b4"))
 
@@ -147,7 +147,10 @@ ggsave("Figures/Lake Erie.JPEG")
 
 water.panel <- ggarrange(WaterDepth, erie.figure,
                            common.legend = TRUE, 
-                         legend = "bottom")
+                         legend = "bottom",
+                         widths = c(1,1),
+                         heights = c(1,1),
+                         align = "h")
                          
 water.panel
 

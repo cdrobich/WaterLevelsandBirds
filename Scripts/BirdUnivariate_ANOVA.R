@@ -7,6 +7,7 @@ library(tidyverse)
 library(car) ## ANOVA function
 library(Hmisc)
 library(gridExtra)
+library(ggpubr)
 
 Data <- read.csv("Data/2014_2015_univariate.csv")
 str(Data)
@@ -153,7 +154,7 @@ TotalAb <- ggplot(Transform, aes(x = Vegetation.type, y = Tab))
 TotalAbundance <- TotalAb + geom_jitter(
   aes(shape = Year, color = Year), 
   position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.8),
-  size = 2) +
+  size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
@@ -167,7 +168,7 @@ TotalAbundance <- TotalAb + geom_jitter(
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14)) +
+        axis.text.y = element_text(size = 15)) +
   theme(legend.position = "blank")
 
 
@@ -230,12 +231,10 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalS.avg = mean(TS
 
 #### Total Species Richness figures ####
 
-TotalS<- ggplot(Transform, aes(x = Vegetation.type, y = TS))
-
-TotalRichness <- TotalS + geom_jitter(
-  aes(shape = Year, color = Year), 
+TotalRichness <- ggplot(Transform, aes(x = Vegetation.type, y = TS)) +
+  geom_jitter(aes(shape = Year, color = Year), 
   position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.8),
-  size = 2) +
+  size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
@@ -248,11 +247,25 @@ TotalRichness <- TotalS + geom_jitter(
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14)) +
+        axis.text.y = element_text(size = 15)) +
   theme(legend.position = "blank")
 
 
 TotalRichness
+
+
+
+ab.richn <- ggarrange(TotalAbundance, TotalRichness,
+                         common.legend = TRUE, 
+                         legend = "bottom",
+                         widths = c(1,1),
+                         heights = c(1,1),
+                         align = "h")
+
+ab.richn
+
+ggsave("Figures/Rich_Abun_panel.JPEG")
+
 
 
 
