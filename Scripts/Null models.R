@@ -13,29 +13,19 @@ species
 
 library(betapart) # beta diversity calculations
 library(picante) # randomizing matrix
-citation("picante")
 
-### someone else's code that is pretty
 
-do.call(rbind, lapply(1:2, function(i) {
-  x <-  randomizeMatrix(com.dat, null.model = "richness", iterations = 1000)
-  unlist(beta.multi.abund(x, index.family = "bray"))
-}))
-
-# a random value & confidence intervals - 
-# beta of each of 500 examples & take differences & CI 
-
-# combine both years bc otherwise not random enough
-# Sites 1 - 6 are 2014 and 7 - 12 are 2015
+# combine both years for each veg type for gamma
 
 ###### Null with all Species (veg x year) #######
+
+#### Meadow null model  ############
+
 species.med <- species %>% filter(VegType == "Meadow") # only meadow sites
 species.m <- species.med[,5:27] # remove categorical variables
 species.m[species.m > 0] <- 1 # make pres/abs
 
-m.cat <- species.med[,2] # take out the year
-m.cat
-
+m.cat <- species.med[,2] # take out year to add back in
 
 # Create a results data frame for each veg x year data
 
@@ -46,28 +36,29 @@ med15v <-data.frame(matrix(as.numeric(0), ncol=(3), nrow=(1000)))
 colnames(med15v) <- c("Turnover","Nestedness","Sum")
 
 
-####### Meadow Null model ########
 
-for (i in 1:1000){ #for 500 iterations
+for (i in 1:1000){ #for 1000 iterations
   tempm <- as.data.frame(randomizeMatrix(species.m, null.model = "independentswap")) #Randomize the data
-  tempm[,24] <- m.cat
-  md14v <- tempm %>% filter(V24 == "2014")
+  tempm[,24] <- m.cat # add year back in 
+  md14v <- tempm %>% filter(V24 == "2014") # seperate the matrix based on year
   md15v <- tempm %>% filter(V24 == "2015")
-  med14bv <- beta.multi(md14v[,1:23], index.family = "sorensen") #Run the beta diversity for each year's randomized data
+  med14bv <- beta.multi(md14v[,1:23], index.family = "sorensen") # Select just species and calculate beta diversity/nest/turnover
   med15bv <- beta.multi(md15v[,1:23], index.family = "sorensen")
   med14v[i,] <- data.frame(matrix(unlist(med14bv), nrow = length(1), byrow = T)) #Put the beta results in the correct results df
   med15v[i,] <- data.frame(matrix(unlist(med15bv), nrow = length(1), byrow = T))
 }
 
 # Meadow 2014
+
+## summarize results from null model 
 mveg.2014 <- med14v %>% 
   summarise(n = n(),
             N.avg = mean(Nestedness),
             N.sd = sd(Nestedness),
-            N.CI = qnorm(0.95)*(N.sd/sqrt(6)),
+            N.CI = qnorm(0.95)*(N.sd/sqrt(6)), # 95% CI
             T.avg = mean(Turnover),
             T.sd = sd(Turnover),
-            T.CI = qnorm(0.95)*(T.sd/sqrt(6)),
+            T.CI = qnorm(0.95)*(T.sd/sqrt(6)), # specify correct sample size
             S.avg = mean(Sum),
             S.sd = sd(Sum),
             S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
@@ -87,9 +78,9 @@ mveg.2015 <- med15v %>%
             S.CI = qnorm(0.95)*(S.sd/sqrt(6)))
 mveg.2015
 
-meadow <- rbind(mveg.2014, mveg.2015)
-meadow$Year <- as.factor(c("2014","2015"))
-meadow$Vegetation <- as.factor(c("Meadow", "Meadow"))
+meadow <- rbind(mveg.2014, mveg.2015)  # combine both years
+meadow$Year <- as.factor(c("2014","2015")) # add year
+meadow$Vegetation <- as.factor(c("Meadow", "Meadow")) # add veg
 meadow
 
 
