@@ -119,9 +119,10 @@ ggsave("Figures/Water Depth ANOVA.JPEG")
 
 ################ Lake Erie ######
 
-erie <- read.csv("Data/lakeerie_2014_2015.csv")
+erie <- read.csv("Data/lakeerie_2014_2015_1918_2013.csv")
 erie
 colnames(erie)
+str(erie)
 
 erie$Year <- as.factor(erie$Year)
 erie$Month <- factor(erie$Month, levels = c("May","June", "July ", "August"))
@@ -130,15 +131,17 @@ erie.figure <- ggplot(data = erie, aes(x = Month, y = Average, group = Year,
                                        colour = Year, shape = Year)) +
   geom_line() +
   geom_point(size = 5) +
+  geom_errorbar(aes(ymin = Average - Stdev, ymax = Average + Stdev),
+                width = 0.3) +
   theme_classic(base_size = 16) +
   theme(panel.border = element_rect(fill = NA)) +
+  ylim(173.9, 175.0) +
   xlab(" ") +
-  ylim(174.0, 175.0) +
   ylab("Lake Erie Depth relative to IGLD 1985 (m) ") +
   theme(axis.text = element_text(size = 13),
         axis.text.x = element_text(size = 16),
         axis.title.y = element_text(size = 15)) +
-  scale_color_manual(values = c("#fc8d62","#1f78b4"))
+  scale_color_manual(values = c("#bdbdbd","#fc8d62","#1f78b4"))
 
 erie.figure
 
@@ -146,11 +149,10 @@ ggsave("Figures/Lake Erie.JPEG")
 
 
 water.panel <- ggarrange(WaterDepth, erie.figure,
-                           common.legend = TRUE, 
                          legend = "bottom",
                          widths = c(1,1),
                          heights = c(1,1),
-                         align = "h")
+                         align = "hv")
                          
 water.panel
 
