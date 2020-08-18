@@ -150,11 +150,11 @@ erie.figure
 ggsave("Figures/Lake Erie.JPEG")
 
 
-water.panel <- ggarrange(WaterDepth, erie.figure,
+water.panel <- ggarrange(erie.figure, WaterDepth, 
                          legend = "bottom",
                          widths = c(1,1),
                          heights = c(1,1),
-                         align = "hv")
+                         align = "h")
                          
 water.panel
 
