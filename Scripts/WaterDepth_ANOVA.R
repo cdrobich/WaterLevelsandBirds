@@ -124,14 +124,16 @@ erie
 colnames(erie)
 str(erie)
 
-erie$Year <- as.factor(erie$Year)
+
+
+
 erie$Month <- factor(erie$Month, levels = c("May","June", "July ", "August"))
 
 erie.figure <- ggplot(data = erie, aes(x = Month, y = Average, group = Year, 
                                        colour = Year, shape = Year)) +
   geom_line() +
   geom_point(size = 5) +
-  geom_errorbar(aes(ymin = Average - Stdev, ymax = Average + Stdev),
+  geom_errorbar(aes(ymin = Average - CI, ymax = Average + CI),
                 width = 0.3) +
   theme_classic(base_size = 16) +
   theme(panel.border = element_rect(fill = NA)) +
