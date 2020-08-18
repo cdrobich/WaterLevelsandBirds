@@ -143,7 +143,8 @@ erie.figure <- ggplot(data = erie, aes(x = Month, y = Average, group = Year,
   theme(axis.text = element_text(size = 13),
         axis.text.x = element_text(size = 16),
         axis.title.y = element_text(size = 15)) +
-  scale_color_manual(values = c("#bdbdbd","#fc8d62","#1f78b4"))
+  scale_color_manual(values = c("#bdbdbd","#fc8d62","#1f78b4")) +
+  scale_shape_manual(values = c(15, 19, 17))
 
 erie.figure
 
