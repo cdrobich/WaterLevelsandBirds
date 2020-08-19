@@ -6,7 +6,7 @@ library(ggpubr)
 ### Import Bird matrix ####
 
 env <- read.csv("Data/Env_variables.csv")
-species <- read.csv("Data/Species matrix_raw.csv")
+speciesraw <- read.csv("Data/Species matrix_raw.csv")
 
 spp <- species[ , 5:27]
 
@@ -86,14 +86,19 @@ library(betapart)
 
 citation("betapart")
 
+species <- read.csv("Data/Species matrix_column relativized.csv")
+
+species <- full_join(env, species) # join by site
+
+
 Year2014 <- species %>% filter(Year == "2014")
 Year2015 <- species %>% filter(Year == "2015")
 
-spp2014 <- Year2014[ ,5:27]
-env2014 <- Year2014[ ,1:4]
+spp2014 <- Year2014[ ,6:28]
+env2014 <- Year2014[ ,1:5]
 
-spp2015 <- Year2015[ ,5:27]
-env2015 <- Year2015[ ,1:4]
+spp2015 <- Year2015[ ,6:28]
+env2015 <- Year2015[ ,1:5]
 
 
 #### Create Bray-Curtis dissimilarity matrix ####
@@ -123,16 +128,16 @@ emerg15 <- Year2015 %>% filter(VegType == "Emergent")
 
 ### just species
 
-spp2014 <- Year2014[ ,5:27]
+spp2014 <- Year2014[ ,6:28]
 
-meadow14sp <- meadow14[ , 5:27]
-meadow15sp <- meadow15[ , 5:27]
+meadow14sp <- meadow14[ , 6:28]
+meadow15sp <- meadow15[ , 6:28]
 
-phrag14sp <- phrag14[ ,5:27]
-phrag15sp <- phrag15[ ,5:27]
+phrag14sp <- phrag14[ ,6:28]
+phrag15sp <- phrag15[ ,6:28]
 
-emerg14sp <- emerg14[ ,5:27]
-emerg15sp <- emerg15[ ,5:27]
+emerg14sp <- emerg14[ ,6:28]
+emerg15sp <- emerg15[ ,6:28]
 
 ## convert to presence absence
 
@@ -305,8 +310,8 @@ Year2014$LCBD <- BD2014$LCBD
 
 BD2014$LCBD[BD2014$LCBD > mean(BD2014$LCBD)] # LCBD > average
 
-#4           5           6           7           9          10         13         19 
-#0.12124900  0.06212209  0.05502379  0.07485454  0.05221660 0.05759652 0.05109404 0.05577960 
+#1           3           4          5          8          9         11         13         15         17         19 
+#0.05084490 0.06910410  0.06052732 0.05717447 0.09337527 0.06867763 0.05044497 0.05014559 0.06827220 0.06267009 0.05451351  
 
 YearF <- ggplot(Year2014, aes(y = LCBD, x = VegType)) +
   geom_point() +
@@ -317,20 +322,16 @@ YearF
 #Beta
 # max value of BD is 0.5
 
-#SStotal      BDtotal 
-#0.44326161   0.02332956
+#SStotal    BDtotal 
+#0.25195771 0.01326093 
 
 #$LCBD; each sites local contribution to BD
-#1          2          3          4 
-#0.04645560 0.04315607 0.02153647 0.12124900 
-#5          6          7          8 
-#0.06212209 0.05502379 0.07485454 0.04894537 
-#9         10         11         12 
-#0.05221660 0.05759652 0.04786658 0.03867879 
-#13         14         15         16 
-#0.05109404 0.02905092 0.04796502 0.04626943 
-#17         18         19         20 
-#0.02844023 0.04150518 0.05577960 0.03019418 
+
+#1          2          3          4          5          6          7          8          9         10         11         12 
+#0.05084490 0.04215959 0.06910410 0.06052732 0.05717447 0.03189931 0.03185241 0.09337527 0.06867763 0.03877596 0.05044497 0.03203308 
+
+#13         14         15         16         17         18         19         20 
+#0.05014559 0.04293677 0.06827220 0.02672509 0.06267009 0.03406406 0.05451351 0.03380367
 
 
 BD2015 <- beta.div(spp2015bc, method = "percentdiff",
@@ -341,24 +342,26 @@ Year2015$LCBD <- BD2015$LCBD
 
 BD2015$LCBD[BD2015$LCBD > mean(BD2015$LCBD)] #which sites have a LCBD > mean
 
-#1           2           3           7           11          13          16          19          20 
-#0.05014927  0.08997777  0.05113195  0.05064635  0.05406081  0.09452751  0.05653058  0.06947543  0.06421346 
+#1          2          5         13         15         17         18         19 
+#0.07723281 0.08751646 0.05694796 0.06875478 0.05215225 0.06563237 0.06284933 0.07279255 
 
 
 Year5 <- ggplot(Year2015, aes(y = LCBD, x = VegType)) +
   geom_point() +
   theme_classic()
 
+Year5
+
+BD2015
 # $beta
 
-#SStotal     BDtotal 
-#0.41512107 0.02184848 
+#SStotal   BDtotal 
+#0.2747038 0.0144581 
 
-#LCBD
-#1          2          3          4          5          6          7          8          9         10         11 
-#0.05014927 0.08997777 0.05113195 0.04146118 0.02640905 0.02824501 0.05064635 0.02984169 0.04263854 0.04429739 0.05406081 
-#12         13         14         15         16         17         18         19         20 
-#0.04266220 0.09452751 0.03850845 0.03558245 0.05653058 0.04542190 0.04421900 0.06947543 0.06421346 
+#1          2          3          4          5          6          7          8          9         10         11         12 
+#0.07723281 0.08751646 0.04639343 0.04583418 0.05694796 0.04614452 0.04659774 0.03775481 0.03572251 0.03998418 0.04421550 0.03553016 
+#13         14         15         16         17         18         19         20 
+#0.06875478 0.01982684 0.05215225 0.03923735 0.06563237 0.06284933 0.07279255 0.01888027 
 
 
 # Combine the data sets and calculate differences
@@ -371,38 +374,35 @@ both_years <- full_join(Year2014, Year2015)
 check <- lm(LCBD ~ VegType*Year, data = both_years)
 summary(check)
 
-Anova(check, type = "2")
+Anova(check, type = "3")
+
+#Anova Table (Type III tests)
+
+#Response: LCBD
+#Sum Sq Df F value Pr(>F)
+#(Intercept)  0.0000054  1  0.0175 0.8954
+#VegType      0.0007560  2  1.2194 0.3080
+#Year         0.0000057  1  0.0183 0.8932
+#VegType:Year 0.0007563  2  1.2198 0.3079
+#Residuals    0.0105404 34 
 
 plot(residuals(check)~fitted(check))
 
-
-# Type III SS
-#VegType      0.0017365  2  2.3904   0.1068    
-#Year         0.0000968  1  0.2665   0.6090    
-#VegType:Year 0.0001722  2  0.2371   0.7902    
-#Residuals    0.0123492 34  
-
-# Type II SS
-#Sum Sq Df F value  Pr(>F)  
-#VegType      0.0020988  2  2.8893 0.06936 .
-#Year         0.0000000  1  0.0000 1.00000  
-#VegType:Year 0.0001722  2  0.2371 0.79024  
-#Residuals    0.0123492 34 
 
 sum <- both_years %>% group_by(VegType, Year) %>% 
   summarise(Avg.LCBD = mean(LCBD),
             sd.LCBD = sd(LCBD),
             min.LCBD = min(LCBD),
             max.LCBD = max(LCBD))
+sum
 
-#VegType  Year  Avg.LCBD sd.LCBD min.LCBD max.LCBD
-#<chr>    <fct>    <dbl>   <dbl>    <dbl>    <dbl>
-#1 Emergent 2014  0.0610  0.0252    0.0415   0.121 
-#2 Emergent 2015  0.0561  0.0197    0.0356   0.0945
-#3 Invaded  2014  0.0394  0.0125    0.0215   0.0550
-#4 Invaded  2015  0.0440  0.00836   0.0298   0.0541
-#5 Meadow   2014  0.0460  0.0167    0.0284   0.0749
-#6 Meadow   2015  0.0479  0.0231    0.0264   0.0900
+#VegType   Year Avg.LCBD sd.LCBD min.LCBD max.LCBD
+#1 Emergent  2014   0.0488 0.0144    0.0267   0.0687
+#2 Emergent  2015   0.0500 0.0216    0.0189   0.0728
+#3 Invaded   2014   0.0519 0.0244    0.0319   0.0934
+#4 Invaded   2015   0.0400 0.00457   0.0355   0.0466
+#5 Meadow    2014   0.0496 0.0147    0.0319   0.0683
+#6 Meadow    2015   0.0600 0.0181    0.0458   0.0875
 
 sum2 <- both_years %>% group_by(VegType) %>% 
   summarise(Avg.LCBD = mean(LCBD),
@@ -412,10 +412,9 @@ sum2 <- both_years %>% group_by(VegType) %>%
 sum2
 
 #VegType  Avg.LCBD sd.LCBD  min.LCBD  max.LCBD
-#<chr>       <dbl>   <dbl>    <dbl>    <dbl>
-#1 Emergent   0.0585  0.0220   0.0356   0.121 
-#2 Invaded    0.0417  0.0104   0.0215   0.0550
-#3 Meadow     0.0469  0.0193   0.0264   0.0900
+#1 Emergent   0.0494  0.0178   0.0189   0.0728
+#2 Invaded    0.0459  0.0179   0.0319   0.0934
+#3 Meadow     0.0548  0.0167   0.0319   0.0875
 
 library(Hmisc)
 colnames(both_years)
@@ -450,30 +449,6 @@ colnames(compare)
 
 compare2 <- compare %>% mutate(LCBDdiff = LCBD2015 - LCBD2014) 
 
-#Year2014.Site Year2014.VegType   LCBD2014   LCBD2015         diff
-#1        CM10_14           Meadow 0.04645560 0.05014927  0.003693677
-#2        CM19_14          Invaded 0.04315607 0.08997777  0.046821700
-#3         CM2_14          Invaded 0.02153647 0.05113195  0.029595483
-#4        CM4R_14         Emergent 0.12124900 0.04146118 -0.079787820
-#5        CM5R_14         Emergent 0.06212209 0.02640905 -0.035713042
-#6         CM6_14          Invaded 0.05502379 0.02824501 -0.026778776
-#7         CM9_14           Meadow 0.07485454 0.05064635 -0.024208188
-#8         LP1_14          Invaded 0.04894537 0.02984169 -0.019103683
-#9        LP10_14         Emergent 0.05221660 0.04263854 -0.009578064
-#10      LP10R_14         Emergent 0.05759652 0.04429739 -0.013299131
-#11       LP12_14           Meadow 0.04786658 0.05406081  0.006194228
-#12      LP12R_14          Invaded 0.03867879 0.04266220  0.003983412
-#13       LP15_14         Emergent 0.05109404 0.09452751  0.043433467
-#14      LP16R_14          Invaded 0.02905092 0.03850845  0.009457529
-#15        LP5_14           Meadow 0.04796502 0.03558245 -0.012382564
-#16       LP5R_14         Emergent 0.04626943 0.05653058  0.010261152
-#17        LP6_14           Meadow 0.02844023 0.04542190  0.016981671
-#18       LP6R_14         Emergent 0.04150518 0.04421900  0.002713829
-#19       LP7R_14         Emergent 0.05577960 0.06947543  0.013695836
-#20       LP8R_14           Meadow 0.03019418 0.06421346  0.034019284
-
-
-
 
 #### Temporal Beta Diversity Index ####
 
@@ -486,7 +461,7 @@ compare2$TBI <- TBI1$BCD.mat
 compare2$p.TBI <- TBI1$p.TBI
 compare2
 
-write.csv(compare2, "Data/LCBD_TBI_data.csv")
+write.csv(compare2, "Data/LCBD_TBI_data_rel.csv")
 
 # C = gain, B = loss; B > C site has lost species between time 1 and 2 (-)
 
