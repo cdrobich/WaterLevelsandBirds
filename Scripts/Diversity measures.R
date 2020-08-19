@@ -6,7 +6,7 @@ library(ggpubr)
 ### Import Bird matrix ####
 
 env <- read.csv("Data/Env_variables.csv")
-speciesraw <- read.csv("Data/Species matrix_raw.csv")
+species <- read.csv("Data/Species matrix_raw.csv")
 
 spp <- species[ , 5:27]
 
@@ -86,19 +86,14 @@ library(betapart)
 
 citation("betapart")
 
-species <- read.csv("Data/Species matrix_column relativized.csv")
-
-species <- full_join(env, species) # join by site
-
-
 Year2014 <- species %>% filter(Year == "2014")
 Year2015 <- species %>% filter(Year == "2015")
 
-spp2014 <- Year2014[ ,6:28]
-env2014 <- Year2014[ ,1:5]
+spp2014 <- Year2014[ ,5:27] # these are in different order
+env2014 <- Year2014[ ,1:4]
 
-spp2015 <- Year2015[ ,6:28]
-env2015 <- Year2015[ ,1:5]
+spp2015 <- Year2015[ ,5:27] # than these sites
+env2015 <- Year2015[ ,1:4]
 
 
 #### Create Bray-Curtis dissimilarity matrix ####
@@ -115,6 +110,7 @@ spp2015bc
 ## beta diversity 
 
 ## beta diversity and nestedness and turnover by veg x year 
+
 
 # seperate the groups
 
@@ -300,6 +296,8 @@ ggsave("Figures/BetaDiversity_partition.jpeg", order)
 
 ######### Local Contribution to Beta Diversity ############
 
+#LCBD 2014
+
 BD2014 <- beta.div(spp2014bc, method = "percentdiff",
          sqrt.D = FALSE, samp = FALSE,
          nperm = 999)
@@ -310,30 +308,7 @@ Year2014$LCBD <- BD2014$LCBD
 
 BD2014$LCBD[BD2014$LCBD > mean(BD2014$LCBD)] # LCBD > average
 
-#1           3           4          5          8          9         11         13         15         17         19 
-#0.05084490 0.06910410  0.06052732 0.05717447 0.09337527 0.06867763 0.05044497 0.05014559 0.06827220 0.06267009 0.05451351  
-
-YearF <- ggplot(Year2014, aes(y = LCBD, x = VegType)) +
-  geom_point() +
-  theme_classic()
-
-YearF
-
-#Beta
-# max value of BD is 0.5
-
-#SStotal    BDtotal 
-#0.25195771 0.01326093 
-
-#$LCBD; each sites local contribution to BD
-
-#1          2          3          4          5          6          7          8          9         10         11         12 
-#0.05084490 0.04215959 0.06910410 0.06052732 0.05717447 0.03189931 0.03185241 0.09337527 0.06867763 0.03877596 0.05044497 0.03203308 
-
-#13         14         15         16         17         18         19         20 
-#0.05014559 0.04293677 0.06827220 0.02672509 0.06267009 0.03406406 0.05451351 0.03380367
-
-
+## LCBD 2015
 BD2015 <- beta.div(spp2015bc, method = "percentdiff",
          sqrt.D = FALSE, samp = FALSE,
          nperm = 999)
@@ -342,27 +317,7 @@ Year2015$LCBD <- BD2015$LCBD
 
 BD2015$LCBD[BD2015$LCBD > mean(BD2015$LCBD)] #which sites have a LCBD > mean
 
-#1          2          5         13         15         17         18         19 
-#0.07723281 0.08751646 0.05694796 0.06875478 0.05215225 0.06563237 0.06284933 0.07279255 
-
-
-Year5 <- ggplot(Year2015, aes(y = LCBD, x = VegType)) +
-  geom_point() +
-  theme_classic()
-
-Year5
-
 BD2015
-# $beta
-
-#SStotal   BDtotal 
-#0.2747038 0.0144581 
-
-#1          2          3          4          5          6          7          8          9         10         11         12 
-#0.07723281 0.08751646 0.04639343 0.04583418 0.05694796 0.04614452 0.04659774 0.03775481 0.03572251 0.03998418 0.04421550 0.03553016 
-#13         14         15         16         17         18         19         20 
-#0.06875478 0.01982684 0.05215225 0.03923735 0.06563237 0.06284933 0.07279255 0.01888027 
-
 
 # Combine the data sets and calculate differences
 library(car)
@@ -388,6 +343,7 @@ Anova(check, type = "3")
 
 plot(residuals(check)~fitted(check))
 
+write.csv(both_years, "Data/LCBD_norel.csv")
 
 sum <- both_years %>% group_by(VegType, Year) %>% 
   summarise(Avg.LCBD = mean(LCBD),
@@ -396,25 +352,12 @@ sum <- both_years %>% group_by(VegType, Year) %>%
             max.LCBD = max(LCBD))
 sum
 
-#VegType   Year Avg.LCBD sd.LCBD min.LCBD max.LCBD
-#1 Emergent  2014   0.0488 0.0144    0.0267   0.0687
-#2 Emergent  2015   0.0500 0.0216    0.0189   0.0728
-#3 Invaded   2014   0.0519 0.0244    0.0319   0.0934
-#4 Invaded   2015   0.0400 0.00457   0.0355   0.0466
-#5 Meadow    2014   0.0496 0.0147    0.0319   0.0683
-#6 Meadow    2015   0.0600 0.0181    0.0458   0.0875
-
 sum2 <- both_years %>% group_by(VegType) %>% 
   summarise(Avg.LCBD = mean(LCBD),
             sd.LCBD = sd(LCBD),
             min.LCBD = min(LCBD),
             max.LCBD = max(LCBD))
 sum2
-
-#VegType  Avg.LCBD sd.LCBD  min.LCBD  max.LCBD
-#1 Emergent   0.0494  0.0178   0.0189   0.0728
-#2 Invaded    0.0459  0.0179   0.0319   0.0934
-#3 Meadow     0.0548  0.0167   0.0319   0.0875
 
 library(Hmisc)
 colnames(both_years)
@@ -441,8 +384,7 @@ LCBD.fig <- ggplot(both_years, aes(x = VegType, y = LCBD)) +
 
 LCBD.fig
 
-compare <- data.frame(Year2014$Site, Year2014$VegType)
-
+compare <- data.frame(Year2014$Site, Year2014$VegType) 
 compare$LCBD2014 <- Year2014$LCBD 
 compare$LCBD2015 <- Year2015$LCBD 
 colnames(compare)
@@ -452,16 +394,32 @@ compare2 <- compare %>% mutate(LCBDdiff = LCBD2015 - LCBD2014)
 
 #### Temporal Beta Diversity Index ####
 
-TBI1 <- TBI(spp2014, spp2015, method = "%difference", nperm = 999, test.t.perm = FALSE)
-TBI1
+species2014 <- Year2014[order(Year2014$VegType),] # put them in the same order
 
-TBI1$BCD.mat
+species2015 <- Year2015[order(Year2015$VegType),] # put them in the same order
 
-compare2$TBI <- TBI1$BCD.mat
-compare2$p.TBI <- TBI1$p.TBI
-compare2
 
-write.csv(compare2, "Data/LCBD_TBI_data_rel.csv")
+spp.2014 <- species2014[,5:28] # remove LCBD and categorical variables
+spp.2015 <- species2015[,5:28]
+
+write.csv(species2014, "Data/species_2014_order.csv") # just exporting to check they are the same order now
+write.csv(species2015, "Data/species_2015_order.csv")
+
+TBI.rel <- TBI(spp.2014, spp.2015, method = "%difference", nperm = 999, test.t.perm = FALSE)
+TBI.rel
+
+
+TBI.results <- as.data.frame(TBI.rel$BCD.mat) # make it a data frame
+TBI.results
+
+cat <- species2014[,1:4]
+cat2 <- species2015[,1:4]
+
+TBI.results[,5:8] <- cat
+TBI.results[,9:12] <- cat2
+
+
+write.csv(TBI.results, "Data/TBI_results_colrel.csv")
 
 # C = gain, B = loss; B > C site has lost species between time 1 and 2 (-)
 
