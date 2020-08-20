@@ -168,7 +168,8 @@ TotalAbundance <- ggplot(Transform, aes(x = Vegetation.type, y = Tab)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 15)) +
-  theme(legend.position = "blank")
+  theme(legend.position = "blank") +
+  ylim(0, 40)
 
 
 TotalAbundance
@@ -247,7 +248,8 @@ TotalRichness <- ggplot(Transform, aes(x = Vegetation.type, y = TS)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 15)) +
-  theme(legend.position = "blank")
+  theme(legend.position = "blank") +
+  ylim(0, 15)
 
 
 TotalRichness
