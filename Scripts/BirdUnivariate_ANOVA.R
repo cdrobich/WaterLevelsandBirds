@@ -12,6 +12,7 @@ library(ggpubr)
 Data <- read.csv("Data/2014_2015_univariate.csv")
 str(Data)
 
+dim(Data)
 colnames(Data)
 unique(Data$Vegetation.type)
 
@@ -21,7 +22,7 @@ Univariate <- Data %>% #rename the factors
                                       "Emergent" = "Typha",
                                       "Invaded" = "Phragmites")) 
 
-Univariate %>% count(Vegetation.type)
+Univariate %>% count(Vegetation.type, Year)
 
 
 Univariate <- Univariate %>% #rename the factors
@@ -69,6 +70,9 @@ Transform <- Univariate %>% mutate(logTS = log(TS),
                       logTab= log(Tab),
                       logMAb = log(Mab),
                       logMS = log(MS))
+
+Transform <- Transform %>% unite("VegYr", Vegetation.type:Year, remove = FALSE)
+
 
 str(Transform)
 
@@ -131,34 +135,44 @@ Anova(TAbANOVA2, type = "3")
 #  Residuals             671.9 34                       
 
 
-Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalAb.avg = mean(Tab),
+Ab.sum <- Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalAb.avg = mean(Tab),
                                                             TotalAb.sd = sd(Tab),
+                                                            N = length(VegYr),
+                                                            TotalAb.se = (TotalAb.sd)/sqrt(N),
                                                             TotalAb.med = median(Tab),
                                                             TotalAb.min = min(Tab),
                                                             TotalAb.max = max(Tab))
+Ab.sum <- as.data.frame(Ab.sum)
+Ab.sum <- Ab.sum %>% unite("VegYr", Vegetation.type:Year, remove = FALSE)
+#Vegetation.type Year  TotalAb.avg TotalAb.sd     N TotalAb.se TotalAb.med TotalAb.min TotalAb.max
 
-#Vegetation.type Year  TotalAb.avg TotalAb.sd TotalAb.min TotalAb.max
-
-#1 Meadow          Five         23         6.23          13          31
-#2 Meadow          Four         9.5       3.08           4          12
-#3 Invaded         Five         14.8       2.23          11          17
-#4 Invaded         Four         16.2       4.79          12          24
-#5 Emergent        Five         22.4       5.24          15          32
-#6 Emergent        Four         15.9       3.76          11          24
+#1 Meadow          2015         23         6.23     6      2.54         23.5          13          31
+#2 Meadow          2014          9.5       3.08     6      1.26         10.5           4          12
+#3 Invaded         2015         14.8       2.23     6      0.910        15            11          17
+#4 Invaded         2014         16.2       4.79     6      1.96         14            12          24
+#5 Emergent        2015         22.4       5.24     8      1.85         21.5          15          32
+#6 Emergent        2014         15.9       3.76     8      1.33         15.5          11          24
  
-
+Transform
 #### Total Abundance figures ####
+
+
+Transform <- Transform %>% 
+  mutate(Year = fct_relevel(Year,
+                            "2014",
+                            "2015"))
+
 
 TotalAbundance <- ggplot(Transform, aes(x = Vegetation.type, y = Tab)) + 
   geom_jitter(
-  aes(shape = Year, color = Year), 
-  position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
-  size = 4) +
+    aes(shape = Year, color = Year), 
+    position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+    size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
-    fun.data = "mean_sdl", fun.args = list(mult = 1),
-    geom = "pointrange", size = 0.6,
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
     position = position_dodge(0.6)
   ) +
   labs(x = " ",
@@ -173,7 +187,6 @@ TotalAbundance <- ggplot(Transform, aes(x = Vegetation.type, y = Tab)) +
 
 
 TotalAbundance
-
 
 
 
@@ -217,16 +230,17 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalS.avg = mean(TS
                                                             TotalS.sd = sd(TS),
                                                             Total.med = median(TS),
                                                             TotalS.min = min(TS),
-                                                            TotalS.max = max(TS))
+                                                            TotalS.max = max(TS),
+                                                            N = length(VegYr),
+                                                            TotalS.se = (TotalS.sd/sqrt(N)))
 
-#Vegetation.type Year  TotalS.avg TotalS.sd TotalS.min TotalS.max
-
-#1 Meadow          Five        7.5      1.87           5         10
-#2 Meadow          Four        4.5      0.837          3          5
-#3 Invaded         Five        5.17     0.983          4          6
-#4 Invaded         Four        5.83     1.94           3          9
-#5 Emergent        Five        5.38     1.19           4          7
-#6 Emergent        Four        4.88     1.36           4          8
+#Vegetation.type Year  TotalS.avg TotalS.sd Total.med TotalS.min TotalS.max     N   TotalS.se
+#1 Meadow          2015        7.5      1.87        7.5          5         10     6     0.764
+#2 Meadow          2014        4.5      0.837       5            3          5     6     0.342
+#3 Invaded         2015        5.17     0.983       5.5          4          6     6     0.401
+#4 Invaded         2014        5.83     1.94        6            3          9     6     0.792
+#5 Emergent        2015        5.38     1.19        5            4          7     8     0.420
+#6 Emergent        2014        4.88     1.36        4.5          4          8     8     0.479
 
 
 #### Total Species Richness figures ####
@@ -238,8 +252,8 @@ TotalRichness <- ggplot(Transform, aes(x = Vegetation.type, y = TS)) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
-    fun.data = "mean_sdl", fun.args = list(mult = 1),
-    geom = "pointrange", size = 0.6,
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
     position = position_dodge(0.6)) +
   labs(x = " ",
        y = expression(paste("Total Bird Species Richness"))) + 
@@ -261,8 +275,9 @@ ab.richn <- ggarrange(TotalAbundance, TotalRichness,
                          legend = "bottom",
                          widths = c(1,1),
                          heights = c(1,1),
-                         align = "h")
-
+                         align = "h",
+                         labels = "AUTO", hjust = c(-6, -6),
+                      vjust = 2.5)
 ab.richn
 
 ggsave("Figures/Rich_Abun_panel.JPEG")

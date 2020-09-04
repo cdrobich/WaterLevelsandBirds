@@ -86,6 +86,15 @@ library(betapart)
 
 citation("betapart")
 
+
+
+
+
+
+
+
+####### Compute dissimilarity across all sites ########
+
 Year2014 <- species %>% filter(Year == "2014")
 Year2015 <- species %>% filter(Year == "2015")
 
