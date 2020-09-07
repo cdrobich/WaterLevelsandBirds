@@ -144,6 +144,7 @@ Ab.sum <- Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalAb.av
                                                             TotalAb.max = max(Tab))
 Ab.sum <- as.data.frame(Ab.sum)
 Ab.sum <- Ab.sum %>% unite("VegYr", Vegetation.type:Year, remove = FALSE)
+
 #Vegetation.type Year  TotalAb.avg TotalAb.sd     N TotalAb.se TotalAb.med TotalAb.min TotalAb.max
 
 #1 Meadow          2015         23         6.23     6      2.54         23.5          13          31
@@ -162,6 +163,12 @@ Transform <- Transform %>%
                             "2014",
                             "2015"))
 
+Transform <- Transform %>% 
+  mutate(Vegetation.type = fct_relevel(Vegetation.type,
+                              "Invaded",
+                              "Meadow",
+                              "Emergent"))
+
 
 TotalAbundance <- ggplot(Transform, aes(x = Vegetation.type, y = Tab)) + 
   geom_jitter(
@@ -177,7 +184,7 @@ TotalAbundance <- ggplot(Transform, aes(x = Vegetation.type, y = Tab)) +
   ) +
   labs(x = " ",
        y = expression(paste("Total Bird Abundance"))) + 
-  scale_color_manual(values = c("#fc8d62","#1f78b4")) +
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
@@ -257,7 +264,7 @@ TotalRichness <- ggplot(Transform, aes(x = Vegetation.type, y = TS)) +
     position = position_dodge(0.6)) +
   labs(x = " ",
        y = expression(paste("Total Bird Species Richness"))) + 
-  scale_color_manual(values = c("#fc8d62","#1f78b4")) +
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 14),
@@ -276,11 +283,94 @@ ab.richn <- ggarrange(TotalAbundance, TotalRichness,
                          widths = c(1,1),
                          heights = c(1,1),
                          align = "h",
-                         labels = "AUTO", hjust = c(-6, -6),
+                         labels = c("C","D"), 
+                      hjust = c(-6, -6),
                       vjust = 2.5)
 ab.richn
 
 ggsave("Figures/Rich_Abun_panel.JPEG")
+
+
+#### with uninvaded vs invaded
+
+transform2 <- Transform %>% 
+  mutate(Vegetation.type = fct_recode(Vegetation.type,
+                                      "Remnant" = "Emergent",
+                                      "Remnant" = "Meadow")) 
+
+
+
+
+TotalAbundance2 <- ggplot(transform2, aes(x = Vegetation.type, y = Tab)) + 
+  geom_jitter(
+    aes(shape = Year, color = Year), 
+    position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+    size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)
+  ) +
+  labs(x = " ",
+       y = expression(paste("Total Bird Abundance"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 40)
+
+
+TotalAbundance2
+
+TotalRichness2 <- ggplot(transform2, aes(x = Vegetation.type, y = TS)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Total Bird Species Richness"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 15)
+
+
+TotalRichness2
+
+
+
+ab.richn2<- ggarrange(TotalAbundance2, TotalRichness2,
+                      common.legend = TRUE, 
+                      legend = "none",
+                      widths = c(1,1),
+                      heights = c(1,1),
+                      align = "h",
+                      labels = c("A","B"),
+                      hjust = c(-6, -6),
+                      vjust = 2.5)
+ab.richn2
+
+ggsave("Figures/Rich_Abun_panel_remnant_invaded.JPEG")
+
+
+
+
+panel <- ggarrange(ab.richn2, ab.richn,
+          nrow = 2)
+
+ggsave("Figures/Rich_Abun_panel_two_three_groups.JPEG", panel)
 
 
 
@@ -333,7 +423,7 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(MarshAb.avg = mean(M
 
 
 
-#### Total Species Richness figures ####
+#### Marsh Abundance Richness figures ####
 
 MarshAb <- ggplot(Transform, aes(x = Vegetation.type, y = Mab))
 
@@ -441,28 +531,10 @@ MarshRichness
 
 #### Panel ####
 
-grid.arrange(TotalAbundance, TotalRichness, MarshAbundance, MarshRichness)
+grid.arrange(TotalAbundance, TotalRichness,
+             ncol = 2)
 
 panel <- arrangeGrob(TotalAbundance, TotalRichness, MarshAbundance, MarshRichness)
 
 
 ggsave("Figures/BirdUnivariate_panels.jpeg", panel)
-
-### get the legend 
-
-get_legend<-function(myggplot){
-  tmp <- ggplot_gtable(ggplot_build(myggplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-  legend <- tmp$grobs[[leg]]
-  return(legend)
-}
-
-
-legend <- get_legend(TotalRichness)
-legend
-
-## animation
-
-library(gganimate)
-
-# https://gganimate.com/articles/gganimate.html#your-first-animation-1

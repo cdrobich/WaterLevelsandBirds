@@ -24,6 +24,7 @@ sp.env.uninv <- sp.env.uninv %>% unite("Veg.Year", Year:VegType, remove = FALSE)
 
 #### NMDS Ordination ####
 
+
 k_vec <- 1:10 #dim 1 - 10
 
 stress <- numeric(length(k_vec)) # stress of each model put here
