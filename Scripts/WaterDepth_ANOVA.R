@@ -90,6 +90,10 @@ Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Wa
 ## Water depth figures
 Univariate$Year <- factor(Univariate$Year, levels = c("2014", "2015")) 
 
+Univariate <- Univariate %>% 
+  mutate(Vegetation.type = fct_relevel(Vegetation.type,
+                               "Invaded", "Meadow", "Emergent"))
+
 Water <- ggplot(Univariate, aes(x = Vegetation.type, y = Water))
 
 Waters <- Water + geom_jitter(
@@ -155,8 +159,11 @@ water.panel <- ggarrange(erie.figure, WaterDepth,
                          legend = "bottom",
                          widths = c(1,1),
                          heights = c(1,1),
-                         align = "h")
+                         align = "h",
+                         labels = c("A", "B"),
+                         hjust = c(-9, -6),
+                         vjust = 2.5)
                          
 water.panel
 
-ggsave("Figures/Sites_Erie.JPEG")
+ggsave("Figures/Sites_Erie.TIFF")

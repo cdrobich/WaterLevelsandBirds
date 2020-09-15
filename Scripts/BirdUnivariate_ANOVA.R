@@ -79,13 +79,13 @@ str(Transform)
 
 par(mfrow = c(2,2))
 
-hist(Univariate$logTab, 
+hist(Transform$logTab, 
      xlab = "Total abundance", main = " ",
      border = "black",
      col = "white")
 
-hist(Univariate$logTS, 
-     xlab = "Total Species Richness", main = " ",
+hist(Transform$logTS, 
+     xlab = "Total SpeciesRichness", main = " ",
      border = "black",
      col = "white")
 
@@ -291,7 +291,7 @@ ab.richn
 ggsave("Figures/Rich_Abun_panel.JPEG")
 
 
-#### with uninvaded vs invaded
+#### with remnant vs invaded
 
 transform2 <- Transform %>% 
   mutate(Vegetation.type = fct_recode(Vegetation.type,
@@ -299,7 +299,30 @@ transform2 <- Transform %>%
                                       "Remnant" = "Meadow")) 
 
 
+Abundance.remnant <- lm(Tab ~ Vegetation.type * Year, data = transform2)
+Anova(Abundance.remnant, type = "3")
 
+plot(Abundance.remnant$residuals)
+plot(Abundance.remnant)
+
+
+#                       Sum Sq Df F value    Pr(>F)    
+#  (Intercept)          1568.17  1 69.4737 6.347e-10 ***
+#  Vegetation.type        38.40  1  1.7013  0.200393    
+#  Year                    5.33  1  0.2363  0.629852    
+# Vegetation.type:Year  246.46  1 10.9187  0.002161 ** 
+#  Residuals             812.60 36                      
+
+Abundance.remnant2 <- lm(logTab ~ Vegetation.type * Year, data = transform2)
+Anova(Abundance.remnant2, type = "3")
+plot(Abundance.remnant2) # these look better
+
+#                       Sum Sq Df  F value    Pr(>F)    
+# (Intercept)          45.357  1 449.7785 < 2.2e-16 ***
+#  Vegetation.type       0.250 1   2.4791  0.124117    
+# Year                  0.012  1   0.1176  0.733698    
+# Vegetation.type:Year  0.883  1   8.7581  0.005422 ** 
+#  Residuals             3.630 36    
 
 TotalAbundance2 <- ggplot(transform2, aes(x = Vegetation.type, y = Tab)) + 
   geom_jitter(
@@ -325,6 +348,32 @@ TotalAbundance2 <- ggplot(transform2, aes(x = Vegetation.type, y = Tab)) +
 
 
 TotalAbundance2
+
+
+Rich.remnant <- lm(TS ~ Vegetation.type * Year, data = transform2)
+Anova(Rich.remnant, type = "3")
+plot(Rich.remnant)
+
+#                         Sum Sq Df F value    Pr(>F)    
+#  (Intercept)          204.167  1 88.1496 3.258e-11 ***
+#  Vegetation.type        5.260  1  2.2708   0.14056    
+#  Year                   1.333  1  0.5757   0.45295    
+# Vegetation.type:Year  10.519  1  4.5416   0.03998 *  
+#  Residuals             83.381 36 
+
+
+Rich.remnant2 <- lm(logTS ~ Vegetation.type * Year, data = transform2)
+Anova(Rich.remnant2, type = "3")
+plot(Rich.remnant2)
+
+#Response: logTS
+#                       Sum Sq Df  F value  Pr(>F)    
+#(Intercept)          17.6150  1 252.2236 < 2e-16 ***
+#  Vegetation.type     0.1462  1   2.0939 0.15654    
+#Year                  0.0228  1   0.3267 0.57117    
+#Vegetation.type:Year  0.2739  1   3.9220 0.05534 .  
+#Residuals             2.5142 36                     
+
 
 TotalRichness2 <- ggplot(transform2, aes(x = Vegetation.type, y = TS)) +
   geom_jitter(aes(shape = Year, color = Year), 
@@ -538,3 +587,223 @@ panel <- arrangeGrob(TotalAbundance, TotalRichness, MarshAbundance, MarshRichnes
 
 
 ggsave("Figures/BirdUnivariate_panels.jpeg", panel)
+
+
+########## Alpha Diversity Measures ##########
+
+species <- read.csv("Data/Species matrix_column relativized.csv") # put them in the same order
+species <- species[order(species$Site),]
+
+dim(species)
+
+(spp <- species[ , 7:29])
+sp.env <- species[, 1:6]
+
+sp.env$Year <- as.factor(sp.env$Year)
+sp.env$VegYr <- as.factor(sp.env$VegYr)
+
+str(sp.env)
+
+sp.env.uninv <- sp.env %>% #rename the factors
+  mutate(VegType = fct_recode(VegType,
+                              "Remnant" = "Emergent",
+                              "Remnant" = "Meadow")) 
+
+sp.env.uninv <- sp.env.uninv %>% unite("Veg.Year", Year:VegType, remove = FALSE)
+
+
+
+### Diversity Measures
+
+(H <- diversity(spp)) # Shannon Index
+(J <- H/log(specnumber(spp))) # Pielou
+(D <- diversity(spp, "simpson"))  # Simpsons 1 - D
+(I <- diversity(spp, "invsimp")) # Simpsons 1/D
+specnumber(spp) # species richness
+
+diversity <- sp.env
+
+diversity$H <- H
+diversity$J <- J
+diversity$D <- D
+diversity$I <- I
+
+diversity <- diversity %>% 
+  mutate(VegType = fct_recode(VegType,
+                              "Remnant" = "Emergent",
+                              "Remnant" = "Meadow")) 
+
+diversity <- diversity %>% unite("Veg.Year", Year:VegType, remove = FALSE)
+
+diversity <- diversity %>% 
+  mutate(VegType = fct_relevel(VegType,
+                               "Invaded", "Remnant"))
+
+
+
+
+diversity <- diversity %>% mutate(logSimp = log(I),
+                                   logPielou= log(J))
+
+par(mfrow = c(2,2))
+
+hist(diversity$I, 
+     xlab = "Simpsons", main = " ",
+     border = "black",
+     col = "white")
+
+hist(diversity$logSimp, 
+     xlab = "log Simpsons", main = " ",
+     border = "black",
+     col = "white")
+
+hist(diversity$J, 
+     xlab = "Pielou", main = " ",
+     border = "black",
+     col = "white")
+
+hist(diversity$logPielou, 
+     xlab = "log Pielou", main = " ",
+     border = "black",
+     col = "white")
+
+
+
+shannon <- ggplot(diversity, aes(x = VegType, y = H)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Shannon-Weiner Diversity (H')"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 2)
+
+shannon
+
+
+
+simpson.anova <- lm(I ~ VegType * Year, data = diversity)
+Anova(simpson.anova, type = "3")
+plot(simpson.anova)
+
+#Response: I
+#              Sum Sq Df F value    Pr(>F)    
+# (Intercept)  57.746  1 47.5141 4.537e-08 ***
+# VegType       0.662  1  0.5443    0.4654    
+# Year          0.846  1  0.6963    0.4095    
+# VegType:Year  0.041  1  0.0334    0.8560    
+# Residuals    43.752 36
+
+
+simpson.anova2 <- lm(logSimp ~ VegType * Year, data = diversity)
+Anova(simpson.anova2, type = "3")
+plot(simpson.anova2) # looks worse
+
+
+simpson <- ggplot(diversity, aes(x = VegType, y = I)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Inverse Simpsons (1/D)"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 6)
+
+simpson # higher this value the higher the diversity
+
+
+
+simpsons <- ggplot(diversity, aes(x = VegType, y = D)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Simpson's Diversity"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 1)
+
+simpsons
+
+
+pielou.anova <- lm(J ~ VegType * Year, data = diversity)
+Anova(pielou.anova, type = "3")
+plot(pielou.anova)
+
+# Response: J
+# Sum Sq Df F value    Pr(>F)    
+# (Intercept)  3.2547  1 96.2758 1.029e-11 ***
+# VegType      0.0031  1  0.0911    0.7645    
+# Year         0.0630  1  1.8635    0.1807    
+# VegType:Year 0.0157  1  0.4630    0.5006    
+# Residuals    1.2170 36  
+
+pielou <- ggplot(diversity, aes(x = VegType, y = J)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Pielou's Evenness (J)"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 1)
+
+pielou
+
+
+
+alpha <- ggarrange(TotalAbundance2, TotalRichness2,
+                  simpson, pielou,
+                      common.legend = TRUE, 
+                      legend = "bottom",
+                      widths = c(1,1),
+                      heights = c(1,1),
+                      align = "h",
+                      labels = c("A","B", "C", "D"), 
+                      hjust = c(-6, -6, -5, -7),
+                      vjust = 2.5)
+alpha
+
+ggsave("Figures/alpha_diversity_abundance.TIFF", alpha)

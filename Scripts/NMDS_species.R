@@ -17,10 +17,12 @@ str(sp.env)
 
 sp.env.uninv <- sp.env %>% #rename the factors
   mutate(VegType = fct_recode(VegType,
-                              "Uninvaded" = "Emergent",
-                              "Uninvaded" = "Meadow")) 
+                              "Remnant" = "Emergent",
+                              "Remnant" = "Meadow")) 
 
 sp.env.uninv <- sp.env.uninv %>% unite("Veg.Year", Year:VegType, remove = FALSE)
+
+citation("vegan")
 
 #### NMDS Ordination ####
 
@@ -228,15 +230,42 @@ ggsave("Figures/NMDS_spps.jpeg", NMDS.spp2,
 spp.b <- vegdist(spp, method = "bray")
 groups <- sp.env.uninv$Veg.Year
 
-(betadisper(spp.b, groups))
+beta.spp <- betadisper(spp.b, groups)
+
+#Call: betadisper(d = spp.b, group = groups)
+
+#No. of Positive Eigenvalues: 24
+#No. of Negative Eigenvalues: 15
+
+#Average distance to median:
+#  2014_Invaded  2014_Remnant   2015_Invaded    2015_Remnant 
+#   0.5053       0.5283         0.3706          0.5415 
+
+
 anova(betadisper(spp.b, groups))
 
 plot(betadisper(spp.b, groups))
 boxplot(betadisper(spp.b, groups))
 
+(permutest(beta.spp, permutations = 999, pairwise = TRUE))
 
+#Permutation test for homogeneity of multivariate dispersions
+#Permutation: free
+#Number of permutations: 999
 
+#Response: Distances
+#         Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
+#Groups     3 0.13463 0.044876 2.1121    999  0.114
+#Residuals 36 0.76491 0.021248                     
 
+#Pairwise comparisons:
+# (Observed p-value below diagonal, permuted p-value above diagonal)
+
+                #2014_Invaded  2014_Remnant  2015_Invaded   2015_Remnant
+#2014_Invaded          -      0.775000      0.116000        0.593
+#2014_Remnant     0.769852         -        0.044000        0.801
+#2015_Invaded     0.111020     0.037399         -           0.014
+#2015_Remnant     0.620946     0.818100      0.015511       -
 
 
 

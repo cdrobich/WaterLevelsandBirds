@@ -111,7 +111,7 @@ turn.figu <- ggplot(beta.uninvaded, aes(x = Vegetation, y = Turnover, fill = Yea
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15))+
-  scale_fill_manual(values = c("#fc8d62","#1f78b4")) 
+  scale_fill_manual(values = c("#fc8d62","#35978f")) 
 
 
 turn.figu  
@@ -129,7 +129,7 @@ nest.figu <- ggplot(beta.uninvaded, aes(x = Vegetation, y = Nestedness, fill = Y
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_fill_manual(values = c("#fc8d62","#1f78b4")) 
+  scale_fill_manual(values = c("#fc8d62","#35978f")) 
 
 
 nest.figu 
@@ -146,7 +146,7 @@ sum.figu <- ggplot(beta.uninvaded, aes(x = Vegetation, y = Sum, fill = Year)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_fill_manual(values = c("#fc8d62","#1f78b4"))
+  scale_fill_manual(values = c("#fc8d62","#35978f"))
 
 sum.figu
 
@@ -212,7 +212,7 @@ uninvaded.2014 <- uninvaded.null.14 %>%
 
 uninvaded.2014
 
-# Meadow 2015
+# uninvaded 2015
 uninvaded.2015 <- uninvaded.null.15 %>% 
   summarise(n = n(),
             N.avg = mean(Nestedness),
@@ -333,7 +333,7 @@ sum.figure <- ggplot(unin.null, aes(x = Vegetation, y = Sum, colour = Year, shap
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+  scale_colour_manual(values = c("#fc8d62","#35978f"))
 
 sum.figure
 
@@ -354,7 +354,7 @@ nest.figure <- ggplot(unin.null, aes(x = Vegetation, y = Nest, colour = Year, sh
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+  scale_colour_manual(values = c("#fc8d62","#35978f"))
 
 nest.figure
 
@@ -374,7 +374,7 @@ turn.figure <- ggplot(unin.null, aes(x = Vegetation, y = Turn, colour = Year, sh
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+  scale_colour_manual(values = c("#fc8d62","#35978f"))
 
 turn.figure
 
@@ -387,7 +387,7 @@ null.points.unin <- ggarrange(sum.figure, turn.figure, nest.figure,
 
 null.points.unin
 
-ggsave("Figures/beta_null_true_points_unin.jpg", null.points.unin,
+ggsave("Figures/beta_null_true_points_unin.TIFF", null.points.unin,
        width = 9.3, height = 5.2, dpi = 150, units = "in")
 
 
