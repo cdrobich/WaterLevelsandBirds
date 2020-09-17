@@ -807,3 +807,84 @@ alpha <- ggarrange(TotalAbundance2, TotalRichness2,
 alpha
 
 ggsave("Figures/alpha_diversity_abundance.TIFF", alpha)
+
+##### with all three groups #########
+
+diversity1 <- diversity %>% #rename the factors
+  mutate(Vegetation.type = fct_recode(VegYr,
+                                      "Invaded" = "Invaded_2014",
+                                      "Invaded" = "Invaded_2015",
+                                      "Meadow" = "Meadow_2014",
+                                      "Meadow" = "Meadow_2015",
+                                      "Emergent" = "Emergent_2014",
+                                      "Emergent" = "Emergent_2015"))
+                                     
+
+
+
+diversity1 <- diversity1 %>% 
+  mutate(VegYr = fct_relevel(Vegetation.type,
+                                  "Invaded", "Meadow", "Emergent"))
+
+## with all three groups ugh #
+
+simpson2 <- ggplot(diversity1, aes(x = Vegetation.type, y = I)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Inverse Simpsons (1/D)"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 6)
+
+simpson2 # higher this value the higher the diversity
+
+pielou2 <- ggplot(diversity1, aes(x = Vegetation.type, y = J)) +
+  geom_jitter(aes(shape = Year, color = Year), 
+              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+              size = 4) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6)) +
+  labs(x = " ",
+       y = expression(paste("Pielou's Evenness (J)"))) + 
+  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 15)) +
+  theme(legend.position = "blank") +
+  ylim(0, 1)
+
+pielou2
+
+
+
+
+alpha.panel <- ggarrange(TotalAbundance, TotalRichness,
+                         simpson2, pielou2, 
+                      common.legend = TRUE, 
+                      legend = "bottom",
+                      widths = c(1,1),
+                      heights = c(1,1),
+                      align = "h",
+                      labels = c("A", "B", "C","D"), 
+                      hjust = c(-6, -6, -5, -6.5),
+                      vjust = 2.5)
+alpha.panel 
+
+ggsave("Figures/alpha_panels.TIFF")
