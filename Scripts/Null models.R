@@ -227,6 +227,10 @@ write.csv(all.null, "Data/Beta_null_true.csv")
 
 str(all.null)
 
+all.null <- all.null %>% 
+  mutate(Vegetation = fct_relevel(Vegetation,
+                                       "Invaded", "Meadow", "Emergent"))
+
 # sum
 sum.figure <- ggplot(all.null, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
@@ -289,13 +293,16 @@ turn.figure <- ggplot(all.null, aes(x = Vegetation, y = Turn, colour = Year, sha
 turn.figure
 
 
-null.points <- ggarrange(sum.figure, nest.figure, turn.figure,
+null.points <- ggarrange(sum.figure, turn.figure, nest.figure,
                          ncol = 3, common.legend = TRUE, legend = "bottom",
-                         align = "hv")
+                         align = "hv",
+                         labels = "AUTO",
+                         hjust = c(-7, -7, -6.5),
+                         vjust = 2.5)
 
 null.points
 
-ggsave("Figures/beta_null_true_points.jpg", null.points)
+ggsave("Figures/beta_null_true_points.TIFF", null.points)
 
 
 

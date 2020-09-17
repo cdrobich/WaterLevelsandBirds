@@ -246,27 +246,52 @@ anova(betadisper(spp.b, groups))
 
 plot(betadisper(spp.b, groups))
 boxplot(betadisper(spp.b, groups))
+?betadisper
+TukeyHSD(beta.spp)
+
+#Tukey multiple comparisons of means
+#95% family-wise confidence level
+
+#Fit: aov(formula = distances ~ group, data = df)
+
+#$group
+#                               diff         lwr        upr     p adj
+#2014_Remnant-2014_Invaded  0.02306433 -0.16849463 0.21462329 0.9880194
+#2015_Invaded-2014_Invaded -0.13465307 -0.36130870 0.09200255 0.3914170
+#2015_Remnant-2014_Invaded  0.03625775 -0.15530122 0.22781671 0.9562358
+#2015_Invaded-2014_Remnant -0.15771740 -0.34927637 0.03384156 0.1378323
+#2015_Remnant-2014_Remnant  0.01319342 -0.13518752 0.16157435 0.9950812
+#2015_Remnant-2015_Invaded  0.17091082 -0.02064814 0.36246978 0.0946179
+
 
 (permutest(beta.spp, permutations = 999, pairwise = TRUE))
+??permutest.betadisper
 
 #Permutation test for homogeneity of multivariate dispersions
 #Permutation: free
 #Number of permutations: 999
 
-#Response: Distances
-#         Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
-#Groups     3 0.13463 0.044876 2.1121    999  0.114
-#Residuals 36 0.76491 0.021248                     
+#   Response: Distances
+#            Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
+# Groups     3 0.13463 0.044876 2.1121    999  0.114
+# Residuals 36 0.76491 0.021248                     
 
 #Pairwise comparisons:
 # (Observed p-value below diagonal, permuted p-value above diagonal)
 
                 #2014_Invaded  2014_Remnant  2015_Invaded   2015_Remnant
-#2014_Invaded          -      0.775000      0.116000        0.593
-#2014_Remnant     0.769852         -        0.044000        0.801
-#2015_Invaded     0.111020     0.037399         -           0.014
+#2014_Invaded          -      0.775000       0.116000        0.593
+#2014_Remnant     0.769852         -         0.044000        0.801
+#2015_Invaded     0.111020     0.037399         -            0.014
 #2015_Remnant     0.620946     0.818100      0.015511       -
 
 
+spp.b.4 <- vegdist(spp, method = "bray")
+groups4 <- sp.env$VegYr
 
+beta.spp4 <- betadisper(spp.b.4, groups4)
 
+plot(beta.spp4)
+boxplot(beta.spp4)
+
+(permutest(beta.spp4, permutations = 999, pairwise = TRUE))
