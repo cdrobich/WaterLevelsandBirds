@@ -320,9 +320,12 @@ write.csv(unin.null, "Data/Beta_null_true_invunin.csv")
 
 ###### Figures, points for real data and null model error bars ########
 
+unin.null.1 <- read.csv("Data/Beta_null_true_invunin.csv")
+str(unin.null.1)
+unin.null.1$Year <- as.factor(unin.null.1$Year)
 
 # sum
-sum.figure <- ggplot(unin.null, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
+sum.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Sum, colour = Vegetation, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = S.avg - S.CI, ymax = S.avg + S.CI),
                 colour = "black",
@@ -337,13 +340,13 @@ sum.figure <- ggplot(unin.null, aes(x = Vegetation, y = Sum, colour = Year, shap
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#35978f"))
+  scale_colour_manual(values = c("#8856a7", "#636363"))
 
 sum.figure
 
 
 # nestedness 
-nest.figure <- ggplot(unin.null, aes(x = Vegetation, y = Nest, colour = Year, shape = Year)) +
+nest.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Nest, colour = Vegetation, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = N.avg - N.CI, ymax = N.avg + N.CI),
                 colour = "black",
@@ -358,12 +361,12 @@ nest.figure <- ggplot(unin.null, aes(x = Vegetation, y = Nest, colour = Year, sh
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#35978f"))
+  scale_colour_manual(values = c("#8856a7", "#636363"))
 
 nest.figure
 
 ## turnover
-turn.figure <- ggplot(unin.null, aes(x = Vegetation, y = Turn, colour = Year, shape = Year)) +
+turn.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Turn, colour = Vegetation, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = T.avg - T.CI, ymax = T.avg + T.CI),
                 colour = "black",
@@ -378,7 +381,7 @@ turn.figure <- ggplot(unin.null, aes(x = Vegetation, y = Turn, colour = Year, sh
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#35978f"))
+  scale_colour_manual(values = c("#8856a7", "#636363"))
 
 turn.figure
 
