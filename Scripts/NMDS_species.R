@@ -215,7 +215,7 @@ ggsave("Figures/NMDS_spps.TIFF", NMDS.spp,
 
 
 
-## beta disper
+#### beta disper #####
 
 spp.b <- vegdist(spp, method = "bray")
 groups <- sp.env$Veg.Year
