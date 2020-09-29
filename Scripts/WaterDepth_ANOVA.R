@@ -108,7 +108,7 @@ Waters <- Water + geom_jitter(
     position = position_dodge(0.8)
   ) +
   labs(x = " ",
-       y = expression(paste("Water Depth (cm)")))
+       y = expression(paste("August Water Depth (cm)")))
 
 
 WaterDepth <- Waters + scale_color_manual(values = c("#fc8d62","#1f78b4")) +
@@ -120,6 +120,7 @@ WaterDepth <- Waters + scale_color_manual(values = c("#fc8d62","#1f78b4")) +
 WaterDepth 
 
 ggsave("Figures/Water Depth ANOVA.JPEG")
+ggsave("Figures/Water Depth ANOVA.TIF")
 
 ################ Lake Erie ######
 
@@ -143,7 +144,7 @@ erie.figure <- ggplot(data = erie, aes(x = Month, y = Average, group = Year,
   theme(panel.border = element_rect(fill = NA)) +
   ylim(173.9, 175.0) +
   xlab(" ") +
-  ylab("Lake Erie Depth relative to IGLD 1985 (m) ") +
+  ylab("Lake Erie Depth Relative to IGLD 1985 (m) ") +
   theme(axis.text = element_text(size = 13),
         axis.text.x = element_text(size = 16),
         axis.title.y = element_text(size = 15)) +
@@ -167,3 +168,4 @@ water.panel <- ggarrange(erie.figure, WaterDepth,
 water.panel
 
 ggsave("Figures/Sites_Erie.TIFF")
+ggsave("Figures/Sites_Erie.jpeg")
