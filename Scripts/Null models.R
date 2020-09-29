@@ -225,14 +225,18 @@ write.csv(all.null, "Data/Beta_null_true.csv")
 
 ###### Figures, points for real data and null model error bars ########
 
-str(all.null)
+all.null1 <- read.csv("Data/Beta_null_true.csv")
 
-all.null <- all.null %>% 
+
+str(all.null1)
+all.null1$Year <- as.factor(all.null1$Year)
+
+all.null1 <- all.null1 %>% 
   mutate(Vegetation = fct_relevel(Vegetation,
                                        "Invaded", "Meadow", "Emergent"))
 
 # sum
-sum.figure <- ggplot(all.null, aes(x = Vegetation, y = Sum, colour = Year, shape = Year)) +
+sum.figure <- ggplot(all.null1, aes(x = Vegetation, y = Sum, colour = Vegetation, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = S.avg - S.CI, ymax = S.avg + S.CI),
                 colour = "black",
@@ -247,13 +251,13 @@ sum.figure <- ggplot(all.null, aes(x = Vegetation, y = Sum, colour = Year, shape
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+  scale_colour_manual(values = c("#8856a7", "#636363", "#525252"))
 
 sum.figure
 
 
 # nestedness 
-nest.figure <- ggplot(all.null, aes(x = Vegetation, y = Nest, colour = Year, shape = Year)) +
+nest.figure <- ggplot(all.null1, aes(x = Vegetation, y = Nest, colour = Vegetation, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = N.avg - N.CI, ymax = N.avg + N.CI),
                 colour = "black",
@@ -268,12 +272,12 @@ nest.figure <- ggplot(all.null, aes(x = Vegetation, y = Nest, colour = Year, sha
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+  scale_colour_manual(values = c("#8856a7", "#636363", "#525252"))
 
 nest.figure
 
 ## turnover
-turn.figure <- ggplot(all.null, aes(x = Vegetation, y = Turn, colour = Year, shape = Year)) +
+turn.figure <- ggplot(all.null1, aes(x = Vegetation, y = Turn, colour = Vegetation, shape = Year)) +
   geom_point(position = position_dodge(0.6), size = 5) +
   geom_errorbar(aes(ymin = T.avg - T.CI, ymax = T.avg + T.CI),
                 colour = "black",
@@ -288,7 +292,7 @@ turn.figure <- ggplot(all.null, aes(x = Vegetation, y = Turn, colour = Year, sha
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#fc8d62","#1f78b4"))
+  scale_colour_manual(values = c("#8856a7", "#636363", "#525252"))
 
 turn.figure
 
@@ -302,7 +306,8 @@ null.points <- ggarrange(sum.figure, turn.figure, nest.figure,
 
 null.points
 
-ggsave("Figures/beta_null_true_points.TIFF", null.points)
+ggsave("Figures/beta_null_true_points.TIFF", null.points,
+       width = 12.1, height = 6.25)
 
 
 
