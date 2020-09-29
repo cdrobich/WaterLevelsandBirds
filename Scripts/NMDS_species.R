@@ -2,27 +2,18 @@ library(vegan)
 library(tidyverse)
 library(ggpubr)
 
-species <- read.csv("Data/Species matrix_column relativized.csv") # put them in the same order
+species <- read.csv("Data/Species matrix_column relativized_remnant.csv") # put them in the same order
 species <- species[order(species$Site),]
 
 dim(species)
 
-(spp <- species[ , 7:29])
-sp.env <- species[, 1:6]
+(spp <- species[ , 9:31])
+(sp.env <- species[, 1:8])
 
 sp.env$Year <- as.factor(sp.env$Year)
-sp.env$VegYr <- as.factor(sp.env$VegYr)
 
 str(sp.env)
 
-sp.env.uninv <- sp.env %>% #rename the factors
-  mutate(VegType = fct_recode(VegType,
-                              "Remnant" = "Emergent",
-                              "Remnant" = "Meadow")) 
-
-sp.env.uninv <- sp.env.uninv %>% unite("Veg.Year", Year:VegType, remove = FALSE)
-
-citation("vegan")
 
 #### NMDS Ordination ####
 
@@ -86,24 +77,19 @@ spp.nms$stress^2 # 0.0242
 
 bird.scores <- as.data.frame(scores(spp.nms, display = "sites"))
 
-bird.scores$Sites <- sp.env.uninv$Site
-bird.scores$Year <- as.factor(sp.env.uninv$Year)
-bird.scores$Vegetation <- sp.env.uninv$VegType
-bird.scores$VegYr <- sp.env.uninv$Veg.Year
+bird.scores$Sites <- sp.env$Site
+bird.scores$Year <- as.factor(sp.env$Year)
+bird.scores$Vegetation <- sp.env$Vegetation
+bird.scores$Veg.Year <- sp.env$Veg.Year
+
 
 colnames(bird.scores)
 str(bird.scores)
-
-write.csv(bird.scores, "Data/NMDS_scores_birdspecies.csv")
 
 ## Vectors
 
 set.seed(126)
 
-#### put meadow and cattail together
-
-unique(sp.env.uninv$VegType)
-spp
 
 ### vectors correlated with axis 1 & 2
 vector.12 <- envfit(spp.nms, spp, 
@@ -113,13 +99,10 @@ vector.12 <- envfit(spp.nms, spp,
 vector.12
 vector12.df <- data.frame((vector.12$vectors)$arrows, (vector.12$vectors)$r, (vector.12$vectors)$pvals)
 
-write.csv(vector12.df, "Data/NMDS_species_vectors_12.csv")
 
 vector.12$vectors$r[vector.12$vectors$r > 0.25] # r2 over 0.25
 
-vector12.df
-
-corr.sp.12 <- spp %>% select(MAWR,VIRA, RWBL, YWAR, SOSP, TRES, EAKI, PUMA)
+corr.sp.12 <- spp %>% select(MAWR, VIRA, RWBL, YWAR, SOSP, TRES, EAKI, PUMA)
 
 corrtaxa.12 <- envfit(spp.nms$points, corr.sp.12,
                    permutations = 999, choices = c(1,2))
@@ -142,7 +125,7 @@ vector.13 <- envfit(spp.nms, spp,
 vector.13
 vector13.df <- data.frame((vector.13$vectors)$arrows, (vector.13$vectors)$r, (vector.13$vectors)$pvals)
 
-write.csv(vector13.df, "Data/NMDS_species_vectors_13.csv")
+
 
 vector.13$vectors$r[vector.13$vectors$r > 0.25] # r2 over 0.25
 
@@ -169,40 +152,43 @@ colnames(bird.scores)
 
 birdspp.12 <- ggplot(data = bird.scores,
                     aes(x = NMDS1, y = NMDS2)) +
-  geom_point(data = bird.scores, aes(x = NMDS1, y = NMDS2, colour = Vegetation, shape = VegYr), size = 5) + # sites as points
-  stat_ellipse(data = bird.scores, aes(x = NMDS1,y = NMDS2,linetype = VegYr, colour = Vegetation), size = 1) + # a 95% CI ellipses
+  geom_point(data = bird.scores, aes(x = NMDS1, y = NMDS2, colour = Vegetation, shape = Veg.Year), size = 5) + # sites as points
+  stat_ellipse(data = bird.scores, aes(x = NMDS1,y = NMDS2,linetype = Veg.Year, colour = Vegetation), size = 1) + # a 95% CI ellipses
   geom_segment(data = corr.spp.12, aes(x = 0, xend = MDS1, y = 0, yend = MDS2), # adding in the vectors, c
                arrow = arrow(length = unit(0.5, "cm")), colour = "black") + # can add in geom_label or geom_text for labels
   theme_classic(base_size = 16) + # no background
-  scale_color_manual(values = c("#01665e", "#8c510a")) + # adding colours
+  scale_color_manual(values = c("#8856a7", "#636363")) + # adding colours
   theme(panel.border = element_rect(fill = NA)) + # full square around figure
   xlab("NMDS 1") +
   ylab("NMDS 2") + 
   ylim(-2, 2) +
-  geom_label(data = corr.spp.12, aes(x = MDS1,y = MDS2,label = species),size=4) +
-  scale_shape_manual(values = c(16, 17, 1, 2)) +
-  scale_linetype_manual(values = c(1, 1, 2, 2))
+  #geom_label(data = corr.spp.12, aes(x = MDS1,y = MDS2,label = species),size=4) +
+  scale_shape_manual(values = c(16, 1, 17, 2)) +
+  scale_linetype_manual(values = c(1, 2, 1, 2))
 
 birdspp.12
 
 
 ## NMDS Axis 1, 3
 # same as above
+colnames(bird.scores)
+str(bird.scores)
+
 birdspp.13 <- ggplot(data = bird.scores,
                      aes(x = NMDS1, y = NMDS3)) +
-  geom_point(data = bird.scores, aes(x = NMDS1, y = NMDS3, colour = Vegetation, shape = VegYr), size = 5) + # sites as points
-  stat_ellipse(data = bird.scores, aes(x = NMDS1,y = NMDS3,linetype = VegYr, colour = Vegetation), size = 1) + # a 95% CI ellipses
+  geom_point(data = bird.scores, aes(x = NMDS1, y = NMDS3, colour = Vegetation, shape = Veg.Year), size = 5) + # sites as points
+  stat_ellipse(data = bird.scores, aes(x = NMDS1,y = NMDS3,linetype = Veg.Year, colour = Vegetation), size = 1) + # a 95% CI ellipses
   geom_segment(data = corr.spp.13, aes(x = 0, xend = MDS1, y = 0, yend = MDS3), # adding in the vectors, c
                arrow = arrow(length = unit(0.5, "cm")), colour = "black") + # can add in geom_label or geom_text for labels
   theme_classic(base_size = 16) + # no background
-  scale_color_manual(values = c("#01665e", "#8c510a")) + # adding colours
+  scale_color_manual(values = c("#8856a7", "#636363")) + # adding colours
   theme(panel.border = element_rect(fill = NA)) + # full square around figure
   xlab("NMDS 1") +
   ylab("NMDS 3") + 
   ylim(-2.5, 2.5) +
-  geom_label(data = corr.spp.13, aes(x = MDS1,y = MDS3,label = species),size=5) +
-  scale_shape_manual(values = c(16, 17, 1, 2)) +
-  scale_linetype_manual(values = c(1, 1, 2, 2))
+  #geom_label(data = corr.spp.13, aes(x = MDS1,y = MDS3,label = species),size=5) +
+  scale_shape_manual(values = c(16, 1, 17, 2)) +
+  scale_linetype_manual(values = c(1, 2, 1, 2))
   
 
 birdspp.13
@@ -211,26 +197,32 @@ birdspp.13
 ## this is from ggpubr
 # arranging the two figures
 NMDS.spp <- ggarrange(birdspp.12, birdspp.13, # put the plot items in
-                      nrow = 2, # I want them on top of each other
+                      nrow = 1, # I want them on top of each other
                       common.legend = TRUE, # they have the same legend
-                      legend = "none")
+                      legend = "none",
+                      labels = "AUTO",
+                      hjust = -6,
+                      vjust = 3)
 
 NMDS.spp
 
 ggsave("Figures/NMDS_spps.jpeg", NMDS.spp,
-       width = 10, height = 10, dpi = 150, units = "in") # save that figure to my folder
+       width = 9.69, height = 6.18, dpi = 150, units = "in") # save that figure to my folder
 
-ggsave("Figures/NMDS_spps.jpeg", NMDS.spp2,
-       width = 10, height = 10, dpi = 150, units = "in")
+ggsave("Figures/NMDS_spps.TIFF", NMDS.spp,
+       width = 9.69, height = 6.18, dpi = 150, units = "in") # save that figure to my folder
+
 
 
 
 ## beta disper
 
 spp.b <- vegdist(spp, method = "bray")
-groups <- sp.env.uninv$Veg.Year
+groups <- sp.env$Veg.Year
 
-beta.spp <- betadisper(spp.b, groups)
+(beta.spp <- betadisper(spp.b, groups))
+
+#Homogeneity of multivariate dispersions
 
 #Call: betadisper(d = spp.b, group = groups)
 
@@ -238,60 +230,49 @@ beta.spp <- betadisper(spp.b, groups)
 #No. of Negative Eigenvalues: 15
 
 #Average distance to median:
-#  2014_Invaded  2014_Remnant   2015_Invaded    2015_Remnant 
-#   0.5053       0.5283         0.3706          0.5415 
+#  Invaded2014  Invaded2015  Remnant2014  Remnant2015 
+#  0.5053       0.3706       0.5283       0.5415 
+
 
 
 anova(betadisper(spp.b, groups))
 
+#Analysis of Variance Table
+
+#Response: Distances
+#           Df  Sum Sq  Mean Sq F value Pr(>F)
+#Groups     3 0.13463 0.044876  2.1121 0.1158
+#Residuals 36 0.76491 0.021248 
+
+
 plot(betadisper(spp.b, groups))
 boxplot(betadisper(spp.b, groups))
-?betadisper
-TukeyHSD(beta.spp)
-
-#Tukey multiple comparisons of means
-#95% family-wise confidence level
-
-#Fit: aov(formula = distances ~ group, data = df)
-
-#$group
-#                               diff         lwr        upr     p adj
-#2014_Remnant-2014_Invaded  0.02306433 -0.16849463 0.21462329 0.9880194
-#2015_Invaded-2014_Invaded -0.13465307 -0.36130870 0.09200255 0.3914170
-#2015_Remnant-2014_Invaded  0.03625775 -0.15530122 0.22781671 0.9562358
-#2015_Invaded-2014_Remnant -0.15771740 -0.34927637 0.03384156 0.1378323
-#2015_Remnant-2014_Remnant  0.01319342 -0.13518752 0.16157435 0.9950812
-#2015_Remnant-2015_Invaded  0.17091082 -0.02064814 0.36246978 0.0946179
-
 
 (permutest(beta.spp, permutations = 999, pairwise = TRUE))
-??permutest.betadisper
 
-#Permutation test for homogeneity of multivariate dispersions
+
+#Permutation test for homogeneity of multivariate
+#dispersions
 #Permutation: free
 #Number of permutations: 999
 
-#   Response: Distances
-#            Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
-# Groups     3 0.13463 0.044876 2.1121    999  0.114
-# Residuals 36 0.76491 0.021248                     
+#Response: Distances
+#         Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
+#Groups     3 0.13463 0.044876 2.1121    999  0.111
+#Residuals 36 0.76491 0.021248                     
 
 #Pairwise comparisons:
-# (Observed p-value below diagonal, permuted p-value above diagonal)
+#  (Observed p-value below diagonal, permuted p-value above diagonal)
 
-                #2014_Invaded  2014_Remnant  2015_Invaded   2015_Remnant
-#2014_Invaded          -      0.775000       0.116000        0.593
-#2014_Remnant     0.769852         -         0.044000        0.801
-#2015_Invaded     0.111020     0.037399         -            0.014
-#2015_Remnant     0.620946     0.818100      0.015511       -
+#              Invaded2014 Invaded2015 Remnant2014 Remnant2015
+#Invaded2014        -      0.119000    0.770000       0.593
+#Invaded2015    0.111020      -        0.040000       0.015
+#Remnant2014    0.769852    0.037399     -            0.799
+#Remnant2015    0.620946    0.015511    0.818100        -    
 
 
-spp.b.4 <- vegdist(spp, method = "bray")
-groups4 <- sp.env$VegYr
 
-beta.spp4 <- betadisper(spp.b.4, groups4)
-
-plot(beta.spp4)
-boxplot(beta.spp4)
-
-(permutest(beta.spp4, permutations = 999, pairwise = TRUE))
+## write data
+write.csv(bird.scores, "Data/NMDS_scores_birdspecies.csv")
+write.csv(vector12.df, "Data/NMDS_species_vectors_12.csv")
+write.csv(vector13.df, "Data/NMDS_species_vectors_13.csv")

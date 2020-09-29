@@ -309,7 +309,11 @@ unin.null$Turn <- beta.uninvaded$Turnover # add in the real data (from `Diversit
 unin.null$Nest <- beta.uninvaded$Nestedness
 unin.null$Sum <- beta.uninvaded$Sum
 
-unin.null # reorder for figure
+colnames(unin.null) # reorder for figure
+str(unin.null)
+
+unin.null <- unin.null %>% mutate(Vegetation = fct_relevel(Vegetation,
+                                              "Invaded", "Remnant"))
 
 write.csv(unin.null, "Data/Beta_null_true_invunin.csv")
 
