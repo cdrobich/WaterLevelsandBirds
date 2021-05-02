@@ -76,6 +76,7 @@ Transform <- Transform %>% unite("VegYr", Vegetation.type:Year, remove = FALSE)
 
 str(Transform)
 
+write.csv(Transform, "Data/spp_univariate.csv")
 
 par(mfrow = c(2,2))
 
@@ -248,6 +249,11 @@ Transform %>% group_by(Vegetation.type, Year) %>% summarise(TotalS.avg = mean(TS
 #6 Emergent        2014        4.88     1.36        4.5          4          8     8     0.479
 
 
+# Figures -----------------------------------------------------------------
+
+Transform <- read.csv("Data/spp_univariate.csv")
+Transform$Year <- as.factor(Transform$Year)
+
 #### Total Species Richness figures ####
 
 TotalRichness <- ggplot(Transform, aes(x = Vegetation.type, y = TS)) +
@@ -322,25 +328,28 @@ plot(Abundance.remnant2) # these look better
 # Vegetation.type:Year  0.883  1   8.7581  0.005422 ** 
 #  Residuals             3.630 36    
 
-TotalAbundance2 <- ggplot(transform2, aes(x = Vegetation.type, y = Tab)) + 
+TotalAbundance2 <- ggplot(transform2,
+                          aes(x = Vegetation.type, y = Tab)) + 
   geom_jitter(
-    aes(shape = Year, color = Year), 
-    position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
+    aes(shape = Year, fill =  Vegetation.type), 
+    position = position_jitterdodge(jitter.width = 0.2,
+                                    dodge.width = 0.6),
     size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
     geom = "pointrange", size = 1,
-    position = position_dodge(0.6)
-  ) +
+    position = position_dodge(0.6),
+    fill = "black") +
   labs(x = " ",
        y = expression(paste("Total Bird Abundance"))) + 
-  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(21,24)) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 15)) +
+        axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
   ylim(0, 40)
 
@@ -373,26 +382,30 @@ plot(Rich.remnant2)
 #Residuals             2.5142 36                     
 
 
-TotalRichness2 <- ggplot(transform2, aes(x = Vegetation.type, y = TS)) +
-  geom_jitter(aes(shape = Year, color = Year), 
-              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
-              size = 4) +
+TotalRichness2 <- ggplot(transform2,
+       aes(x = Vegetation.type, y = TS)) + 
+  geom_jitter(
+    aes(shape = Year, fill =  Vegetation.type), 
+    position = position_jitterdodge(jitter.width = 0.2,
+                                    dodge.width = 0.6),
+    size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
     geom = "pointrange", size = 1,
-    position = position_dodge(0.6)) +
+    position = position_dodge(0.6),
+    fill = "black") +
   labs(x = " ",
-       y = expression(paste("Total Bird Species Richness"))) + 
-  scale_color_manual(values = c("#fc8d62","#35978f")) +
+       y = expression(paste("Total Species Richness"))) + 
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(21,24)) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 15)) +
+        axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
   ylim(0, 15)
-
 
 TotalRichness2
 
@@ -476,6 +489,9 @@ diversity <- diversity %>%
 diversity <- diversity %>% mutate(logSimp = log(I),
                                    logPielou= log(J))
 
+write.csv(diversity, "Data/univariate_diversity.csv")
+
+
 par(mfrow = c(2,2))
 
 hist(diversity$I, 
@@ -499,30 +515,34 @@ hist(diversity$logPielou,
      col = "white")
 
 
+diversity <- read.csv("Data/univariate_diversity.csv")
+diversity$Year <- as.factor(diversity$Year)
 
-shannon <- ggplot(diversity, aes(x = VegType, y = H)) +
-  geom_jitter(aes(shape = Year, color = Year), 
-              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
-              size = 4) +
+
+shannon <- ggplot(diversity,
+       aes(x = VegType, y = H)) + 
+  geom_jitter(
+    aes(shape = Year, fill = VegType), 
+    position = position_jitterdodge(jitter.width = 0.2,
+                                    dodge.width = 0.6),
+    size = 4) +
   theme_classic() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
     geom = "pointrange", size = 1,
-    position = position_dodge(0.6)) +
+    position = position_dodge(0.6),
+    fill = "black") +
   labs(x = " ",
        y = expression(paste("Shannon-Weiner Diversity (H')"))) + 
-  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(21,24)) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 15)) +
+        axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
   ylim(0, 2)
-
-shannon
-
-
 
 simpson.anova <- lm(I ~ VegType * Year, data = diversity)
 Anova(simpson.anova, type = "3")
@@ -542,8 +562,9 @@ Anova(simpson.anova2, type = "3")
 plot(simpson.anova2) # looks worse
 
 
-simpson <- ggplot(diversity, aes(x = VegType, y = I)) +
-  geom_jitter(aes(shape = Year, color = Year), 
+
+simpsons <- ggplot(diversity, aes(x = VegType, y = I)) +
+  geom_jitter(aes(shape = Year, fill = VegType), 
               position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
               size = 4) +
   theme_classic() +
@@ -551,42 +572,23 @@ simpson <- ggplot(diversity, aes(x = VegType, y = I)) +
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
     geom = "pointrange", size = 1,
-    position = position_dodge(0.6)) +
+    position = position_dodge(0.6),
+    fill = "black") +
   labs(x = " ",
-       y = expression(paste("Inverse Simpsons (1/D)"))) + 
-  scale_color_manual(values = c("#fc8d62","#35978f")) +
+       y = expression(paste("Simpson's Diversity (1/D)"))) + 
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(21,24)) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 15)) +
+        axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
   ylim(0, 6)
 
-simpson # higher this value the higher the diversity
-
-
-
-simpsons <- ggplot(diversity, aes(x = VegType, y = D)) +
-  geom_jitter(aes(shape = Year, color = Year), 
-              position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
-              size = 4) +
-  theme_classic() +
-  stat_summary(
-    aes(shape = Year),
-    fun.data = "mean_se", fun.args = list(mult = 1),
-    geom = "pointrange", size = 1,
-    position = position_dodge(0.6)) +
-  labs(x = " ",
-       y = expression(paste("Simpson's Diversity"))) + 
-  scale_color_manual(values = c("#fc8d62","#35978f")) +
-  theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
-        axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 15)) +
-  theme(legend.position = "blank") +
-  ylim(0, 1)
-
 simpsons
+
+
+
 
 
 pielou.anova <- lm(J ~ VegType * Year, data = diversity)
@@ -602,7 +604,7 @@ plot(pielou.anova)
 # Residuals    1.2170 36  
 
 pielou <- ggplot(diversity, aes(x = VegType, y = J)) +
-  geom_jitter(aes(shape = Year, color = Year), 
+  geom_jitter(aes(shape = Year, fill = VegType), 
               position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.6),
               size = 4) +
   theme_classic() +
@@ -610,32 +612,28 @@ pielou <- ggplot(diversity, aes(x = VegType, y = J)) +
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
     geom = "pointrange", size = 1,
-    position = position_dodge(0.6)) +
+    position = position_dodge(0.6),
+    fill = "black") +
   labs(x = " ",
        y = expression(paste("Pielou's Evenness (J)"))) + 
-  scale_color_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(21,24)) +
   theme(panel.border = element_rect(fill = NA)) +
-  theme(text = element_text(size = 16),
+  theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 15)) +
-  theme(legend.position = "blank") +
-  ylim(0, 1)
+        axis.text.y = element_text(size = 14)) +
+  ylim(0, 1) +
+  guides(fill = "none")
 
 pielou
 
 
+library(patchwork)
 
-alpha <- ggarrange(TotalAbundance2, TotalRichness2,
-                  simpson, pielou,
-                      common.legend = TRUE, 
-                      legend = "bottom",
-                      widths = c(1,1),
-                      heights = c(1,1),
-                      align = "h",
-                      labels = c("A","B", "C", "D"), 
-                      hjust = c(-6, -6, -5, -7),
-                      vjust = 2.5)
-alpha
+alpha <- TotalAbundance2 + TotalRichness2 + simpsons + pielou +
+  plot_annotation(tag_levels = 'A')
+
+
 
 ggsave("Figures/alpha_diversity_abundance.TIFF", alpha)
 
