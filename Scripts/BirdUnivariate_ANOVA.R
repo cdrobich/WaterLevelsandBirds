@@ -66,7 +66,8 @@ hist(Univariate$MS,
 
 #### transform variables ####
 
-Transform <- Univariate %>% mutate(logTS = log(TS),
+Transform <- Univariate %>% 
+  mutate(logTS = log(TS),
                       logTab= log(Tab),
                       logMAb = log(Mab),
                       logMS = log(MS))
@@ -111,7 +112,7 @@ Anova(TAbANOVA, type = "3")
 
 #Response: logTab
 #                      Sum Sq  Df  F value    Pr(>F)    
-# (Intercept)          57.663  1  759.8577  < 2.2e-16 ***
+#  (Intercept)          57.663  1  759.8577  < 2.2e-16 ***
 #  Vegetation.type       0.688  2   4.5342  0.0179652 *  
 #  Year                  2.488  1  32.7899  1.953e-06 ***
 #  Vegetation.type:Year  1.438  2   9.4747  0.0005364 ***
