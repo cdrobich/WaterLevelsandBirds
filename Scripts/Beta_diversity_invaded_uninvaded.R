@@ -352,7 +352,7 @@ sum.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Sum,
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15),
         legend.position = "none") +
-  scale_colour_manual(values = colour) +
+  scale_fill_manual(values = colour) +
   scale_shape_manual(values = shape) 
 
 sum.figure
@@ -375,7 +375,7 @@ nest.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Nest,
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = colour) +
+  scale_fill_manual(values = colour) +
   scale_shape_manual(values = shape) +
   guides(fill = "none")
 
@@ -401,7 +401,7 @@ turn.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Turn,
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15),
         legend.position = "none") +
-  scale_colour_manual(values = colour) +
+  scale_fill_manual(values = colour) +
   scale_shape_manual(values = shape) 
 
 turn.figure
