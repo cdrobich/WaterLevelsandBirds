@@ -99,6 +99,8 @@ beta.uninvaded$N <- c("14","14","6","6")
 write.csv(beta.uninvaded, "Data/beta_diversity_twogroups.csv")
 
 #### Beta Diversity Figure #####
+beta.uninvaded <- read.csv("Data/beta_diversity_twogroups.csv")
+beta.uninvaded$Year <- as.factor(beta.uninvaded$Year)
 
 ## Turnover
 turn.figu <- ggplot(beta.uninvaded, aes(x = Vegetation, y = Turnover, fill = Year)) +
@@ -324,9 +326,18 @@ unin.null.1 <- read.csv("Data/Beta_null_true_invunin.csv")
 str(unin.null.1)
 unin.null.1$Year <- as.factor(unin.null.1$Year)
 
+colour = c("Invaded" = "#fc8d62",
+           "Remnant" = "#35978f")
+
+shape = c("2014" = 21,
+          "2015" = 24)
+
+
+
 # sum
-sum.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Sum, colour = Vegetation, shape = Year)) +
-  geom_point(position = position_dodge(0.6), size = 5) +
+sum.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Sum, 
+                                      fill = Vegetation, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 5, stroke = 1.5) +
   geom_errorbar(aes(ymin = S.avg - S.CI, ymax = S.avg + S.CI),
                 colour = "black",
                 size = 1,
@@ -339,15 +350,18 @@ sum.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Sum, colour = Vegetati
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
-        axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#8856a7", "#636363"))
+        axis.text.y = element_text(size = 15),
+        legend.position = "none") +
+  scale_colour_manual(values = colour) +
+  scale_shape_manual(values = shape) 
 
 sum.figure
 
 
 # nestedness 
-nest.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Nest, colour = Vegetation, shape = Year)) +
-  geom_point(position = position_dodge(0.6), size = 5) +
+nest.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Nest, 
+                                       fill = Vegetation, shape = Year)) +
+  geom_point(position = position_dodge(0.6), size = 5, stroke = 1.5) +
   geom_errorbar(aes(ymin = N.avg - N.CI, ymax = N.avg + N.CI),
                 colour = "black",
                 size = 1,
@@ -361,13 +375,18 @@ nest.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Nest, colour = Vegeta
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#8856a7", "#636363"))
+  scale_colour_manual(values = colour) +
+  scale_shape_manual(values = shape) +
+  guides(fill = "none")
 
 nest.figure
 
 ## turnover
-turn.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Turn, colour = Vegetation, shape = Year)) +
-  geom_point(position = position_dodge(0.6), size = 5) +
+turn.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Turn, 
+                                       fill = Vegetation, shape = Year)) +
+  geom_point(position = position_dodge(0.6), 
+             size = 5,
+             stroke = 1.5) +
   geom_errorbar(aes(ymin = T.avg - T.CI, ymax = T.avg + T.CI),
                 colour = "black",
                 size = 1,
@@ -380,21 +399,21 @@ turn.figure <- ggplot(unin.null.1, aes(x = Vegetation, y = Turn, colour = Vegeta
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 16),
         axis.text.x = element_text(size = 15),
-        axis.text.y = element_text(size = 15)) +
-  scale_colour_manual(values = c("#8856a7", "#636363"))
+        axis.text.y = element_text(size = 15),
+        legend.position = "none") +
+  scale_colour_manual(values = colour) +
+  scale_shape_manual(values = shape) 
 
 turn.figure
 
+library(patchwork)
 
-null.points.unin <- ggarrange(sum.figure, turn.figure, nest.figure,
-                         ncol = 3, common.legend = TRUE, legend = "bottom",
-                         labels = "AUTO",
-                         hjust = -7,
-                         vjust = 2.5)
+null.points.unin <- sum.figure + turn.figure + nest.figure +
+  plot_annotation(tag_levels = 'A')
 
 null.points.unin
 
-ggsave("Figures/beta_null_true_points_unin.TIFF", null.points.unin,
-       width = 9.3, height = 5.2, dpi = 150, units = "in")
+ggsave("Figures/beta_null_true_points_unin.TIFF", 
+       null.points.unin)
 
 

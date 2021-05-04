@@ -117,6 +117,21 @@ Anova(i.mod, type = "3")
 
 check_model(i.mod)
 
+# Shannon-Weiner
+
+h.mod <- lm(H ~ Veg * Year, data = un.data)
+Anova(h.mod, type = "3")
+
+#Response: H
+#             Sum Sq Df  F value Pr(>F)    
+#(Intercept) 13.4489  1 244.4013 <2e-16 ***
+#Veg          0.1401  1   2.5461 0.1193    
+#Year         0.0177  1   0.3216 0.5742    
+#Veg:Year     0.0696  1   1.2645 0.2682    
+#Residuals    1.9810 36 
+
+check_model(h.mod)
+
 ## Pielous 
 
 j.mod <- lm(J ~ Veg * Year, data = un.data)
@@ -278,6 +293,32 @@ simp <- ggplot(un.data,
   theme(legend.position = "blank") +
   ylim(0,7)
 
+shannon <- ggplot(un.data,
+                    aes(x = Veg, y = H)) + 
+  geom_jitter(
+    aes(shape = Year, fill =  Veg), 
+    position = position_jitterdodge(jitter.width = 0.2,
+                                    dodge.width = 0.6),
+    size = 4.5,
+    stroke = 1.5) +
+  theme_classic() +
+  stat_summary(
+    aes(shape = Year),
+    fun.data = "mean_se", fun.args = list(mult = 1),
+    geom = "pointrange", size = 1,
+    position = position_dodge(0.6),
+    fill = "black") +
+  labs(x = " ",
+       y = expression(paste("Shannon-Weiner Index"))) + 
+  scale_fill_manual(values = colour) +
+  scale_shape_manual(values = shape) +
+  theme(panel.border = element_rect(fill = NA)) +
+  theme(text = element_text(size = 14),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14)) +
+  theme(legend.position = "blank") +
+  ylim(0,3)
+
 
 pielou <- ggplot(un.data,
                  aes(x = Veg, y = J)) + 
@@ -303,10 +344,11 @@ pielou <- ggplot(un.data,
   theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
-  guides(fill = "none")
+  guides(fill = "none") +
+  ylim(0, 1)
 
 
-panel <- abundance + richness + simp + pielou +
+panel <- abundance + richness + shannon + pielou +
   plot_annotation(tag_levels = 'A')
 
 panel
@@ -324,6 +366,191 @@ spp.long <- spp.wide  %>%
   pivot_longer(AMBI:AMRO, names_to = "Species", values_to = "count")
 
 spp.long$Year <- as.factor(spp.long$Year)
+
+
+
+cattail <- spp.long %>% 
+  filter(VegType == "Emergent") %>% 
+  filter(count > 0)
+
+
+ctsum <- cattail %>% group_by(Year, Species) %>% 
+  summarize(sum = sum(count))
+
+ctsum$veg <- c("Emergent")
+               
+# total 
+#1 AMBI        4
+#2 BANS        1
+#3 BARS        1
+#4 COYE       49
+#5 CSWA        1
+#6 EAKI        4
+#7 LEBI        2
+#8 MAWR       51
+#9 RWBL      133
+#10 SWSP       50
+#11 TRES        7
+#12 VIRA        4
+#13 WIFL        1
+#14 YWAR        8
+
+
+meadow <- spp.long %>% 
+  filter(VegType == "Meadow")%>% 
+  filter(count > 0)
+
+
+meadow %>% group_by(Species) %>% 
+  summarize(sum = sum(count))
+
+#Species   sum
+#<chr>   <int>
+#1 AMRO        1
+#2 BANS        1
+#3 BARS        3
+#4 CHSP        1
+#5 CLIFF       1
+#6 COGR        1
+#7 COYE       33
+#8 CSWA        1
+#9 EAKI        5
+#10 MAWR        6
+#11 NOCA        1
+#12 PUMA        2
+#13 RWBL       84
+#14 SORA        2
+#15 SOSP        8
+#16 SWSP       22
+#17 TRES       12
+#18 VIRA        2
+#19 YWAR        9
+
+mdsum <- meadow %>% group_by(Year, Species) %>% 
+  summarize(sum = sum(count))
+
+mdsum$veg <- c("Meadow")
+
+phrag <- spp.long %>% 
+  filter(VegType == "Invaded")%>% 
+  filter(count > 0)
+
+
+phrag %>% group_by(Species) %>% 
+  summarize(sum = sum(count))
+
+#Species   sum
+#1 AMWO        1
+#2 BARS        6
+#3 COGR        1
+#4 COYE       28
+#5 EAKI        1
+#6 MAWR       29
+#7 RWBL       66
+#8 SORA        1
+#9 SOSP        4
+#10 SWSP       34
+#11 TRES        6
+#12 VIRA        1
+#13 YWAR        8
+
+phr.sum <- phrag %>% group_by(Year, Species) %>% 
+  summarize(sum = sum(count))
+
+phr.sum$veg <- c("Phragmites")
+
+test <- rbind(ctsum, mdsum)
+birds.veg <- rbind(test, phr.sum)
+
+birds.veg <- birds.veg %>% 
+  pivot_wider(names_from = "Species",
+              values_from = "sum") %>%
+  replace(is.na(.), 0)
+
+birds.veg <- birds.veg %>% t 
+
+write.csv(birds.veg, "Data/birds_veg_appendix.csv")
+
+
+
+ct <- ggplot(cattail, aes(x = Year, 
+                         y = count,
+                         shape = Year)) +
+  facet_wrap(~Species) +
+  ggtitle("Cattail") +
+  geom_boxplot(lwd = 0.7,
+               width = 0.5,
+               position = position_dodge(0.8),
+               show.legend = F) +
+  geom_jitter(aes(stroke = 1,
+                  shape = Year),
+              size = 3,
+              width = 0.2,
+              fill = "#35978f") +
+  labs(y = 'Count', x = ' ') +
+  theme_bw() +
+  scale_shape_manual(values = c(21,24)) +
+  theme(axis.text = element_text(size = 14),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.position = "none") +
+  guides(fill ="none")
+
+md <- ggplot(meadow, aes(x = Year, 
+                         y = count,
+                         shape = Year)) +
+  facet_wrap(~Species) +
+  ggtitle("Meadow") +
+  geom_boxplot(lwd = 0.7,
+               width = 0.5,
+               position = position_dodge(0.8),
+               show.legend = F) +
+  geom_jitter(aes(stroke = 1,
+                  shape = Year),
+              size = 3,
+              width = 0.2,
+              fill = "#35978f") +
+  labs(y = 'Count', x = ' ') +
+  theme_bw() +
+  scale_shape_manual(values = c(21,24)) +
+  theme(axis.text = element_text(size = 14),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.position = "none") +
+  guides(fill ="none")
+  
+
+phr <- ggplot(phrag, aes(x = Year, y = count,
+                         shape = Year)) +
+  facet_wrap(~Species) +
+  ggtitle("Phragmites") +
+  geom_boxplot(lwd = 0.7,
+               width = 0.5,
+               position = position_dodge(0.8),
+               show.legend = F) +
+  geom_jitter(aes(stroke = 1,
+                  fill = "#fc8d62"),
+              size = 3,
+              width = 0.2) +
+  labs(y = 'Count', x = ' ') +
+  theme_bw() +
+  scale_shape_manual(values = c(21,24)) +
+  theme(axis.text = element_text(size = 14),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  guides(fill ="none")
+  
+
+
+
+veg <- ct + md + phr +
+  plot_layout(ncol = 3)
+
+veg
+
 
 # Total count
 
