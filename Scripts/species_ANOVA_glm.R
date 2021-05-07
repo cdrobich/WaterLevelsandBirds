@@ -150,6 +150,8 @@ check_model(j.mod)
 
 # multi GLM ---------------------------------------------------------------
 
+species <- read.csv("Data/matrix_univariate.csv")
+
 spp <- species %>% 
   select(AMBI:AMRO)
 
@@ -158,6 +160,7 @@ env <- species %>%
 
 
 spp.mv <- mvabund(spp)
+
 
 spp.mod <- manyglm(spp.mv ~ Veg * factor(Year),
                    data = env, family = "poisson")
