@@ -27,6 +27,7 @@ species <- species %>%
                               "Remnant" = "Emergent",
                               "Remnant" = "Meadow")) %>% 
   unite("VegYr", Year:VegType, remove = FALSE) %>% 
+  unite("veg.year", Veg,Year, remove = FALSE) %>% 
   mutate(S = specnumber(species[,6:28]), # species richness
          Ab = rowSums(species[,6:28]), # total abundance
          H = diversity(species[,6:28]), # Shannon Index
