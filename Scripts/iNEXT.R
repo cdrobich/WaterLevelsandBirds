@@ -100,7 +100,7 @@ ChaoRichness(invaded)
 
 ChaoSimpson(invaded)
 
-#Observed Estimator Est_s.e. 95% Lower 95% Upper
+#            Observed Estimator Est_s.e. 95% Lower 95% Upper
 #invaded2014    0.809     0.817    0.022     0.809     0.861
 #invaded2015    0.762     0.770    0.026     0.762     0.821
 
@@ -126,6 +126,11 @@ colnames(habrich)
 
 meadow <- habrich %>% 
   select(marsh14, marsh15)
+
+meadow  <- meadow  %>% 
+  rename("2014" = "marsh14",
+         "2015" = "marsh15")
+
 
 emerg <- habrich %>% 
   select(emg14, emg15)
@@ -173,16 +178,36 @@ ChaoSimpson(emerg)
 #emg15    0.693     0.697    0.026     0.693     0.747
 
 
+
 m.plot <- ggiNEXT(m, type = 1, se = TRUE, facet.var = "order")+
-  ggtitle("Meadow marsh") 
+  ggtitle("Meadow marsh") +
+theme_bw() +
+  theme(axis.text = element_text(size = 12),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.position = "right") +
+  scale_colour_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(18, 15)) +
+  guides(fill ="none") 
 
 e.plot <- ggiNEXT(e, type = 1, se = TRUE, facet.var = "order")+
-  ggtitle("Emergent marsh") 
+  ggtitle("Emergent marsh") +
+theme_bw() +
+  theme(axis.text = element_text(size = 12),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.position = "none") +
+  scale_colour_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(18, 15)) +
+  guides(fill ="none") 
 
 
 
-hab.plot <- b.plot + e.plot + m.plot +
-  plot_layout(nrow = 3) +
+hab.plot <- e.plot + m.plot +
   plot_annotation(tag_levels = "A")
 
 ggsave("Figures/habitat_iNEXT.jpeg")
