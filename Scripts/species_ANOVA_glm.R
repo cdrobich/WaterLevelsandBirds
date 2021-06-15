@@ -215,8 +215,6 @@ colour = c("Invaded" = "#fc8d62",
 shape = c("2014" = 21,
           "2015" = 24)
 
-
-
 # Univariate figures ------------------------------------------------------
 
 abundance <- ggplot(un.data,
@@ -226,8 +224,9 @@ abundance <- ggplot(un.data,
     position = position_jitterdodge(jitter.width = 0.2,
                                     dodge.width = 0.6),
     size = 4.5,
-    stroke = 1.5) +
-  theme_classic() +
+    stroke = 1.5,
+    alpha = 0.8) +
+  theme_bw() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
@@ -235,7 +234,7 @@ abundance <- ggplot(un.data,
     position = position_dodge(0.6),
     fill = "black") +
   labs(x = " ",
-       y = expression(paste("Total Bird Abundance"))) + 
+       y = expression(paste("Total Abundance"))) + 
   scale_fill_manual(values = colour) +
   scale_shape_manual(values = shape) +
   theme(panel.border = element_rect(fill = NA)) +
@@ -261,7 +260,7 @@ richness <- ggplot(un.data,
     position = position_dodge(0.6),
     fill = "black") +
   labs(x = " ",
-       y = expression(paste("Total Species Richness"))) + 
+       y = expression(paste("Species Richness"))) + 
   scale_fill_manual(values = colour) +
   scale_shape_manual(values = shape) +
   theme(panel.border = element_rect(fill = NA)) +
@@ -278,8 +277,9 @@ simp <- ggplot(un.data,
     position = position_jitterdodge(jitter.width = 0.2,
                                     dodge.width = 0.6),
     size = 4.5,
-    stroke = 1.5) +
-  theme_classic() +
+    stroke = 1.5,
+    alpha = 0.8) +
+  theme_bw() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
@@ -304,8 +304,9 @@ shannon <- ggplot(un.data,
     position = position_jitterdodge(jitter.width = 0.2,
                                     dodge.width = 0.6),
     size = 4.5,
-    stroke = 1.5) +
-  theme_classic() +
+    stroke = 1.5,
+    alpha = 0.8) +
+  theme_bw() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
@@ -331,8 +332,9 @@ pielou <- ggplot(un.data,
     position = position_jitterdodge(jitter.width = 0.2,
                                     dodge.width = 0.6),
     size = 4.5,
-    stroke = 1.5) +
-  theme_classic() +
+    stroke = 1.5,
+    alpha = 0.8) +
+  theme_bw() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
@@ -341,13 +343,14 @@ pielou <- ggplot(un.data,
     fill = "black",
     show.legend = F) +
   labs(x = " ",
-       y = expression(paste("Pielou's Evenness (J)"))) + 
+       y = expression(paste("Pielou's Evenness"))) + 
   scale_fill_manual(values = colour) +
   scale_shape_manual(values = shape) +
   theme(panel.border = element_rect(fill = NA)) +
   theme(text = element_text(size = 14),
         axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14)) +
+        axis.text.y = element_text(size = 14),
+        legend.position = "right") +
   guides(fill = "none") +
   ylim(0, 1)
 
@@ -358,6 +361,14 @@ panel <- abundance + richness + shannon + pielou +
 panel
 
 ggsave("Figures/alpha_diversity_abundance.TIFF", panel)
+
+figure2 <- year14 + year15 + 
+  abundance + richness + shannon + pielou +
+  plot_annotation(tag_levels = 'A') + 
+  plot_layout(nrow = 3)
+
+ggsave("Figures/Figure2_iNEXT_uni.TIFF",
+       figure3)
 
 
 # Multivariate figures ----------------------------------------------------
@@ -569,7 +580,6 @@ ggplot(spp.long, aes(x = Veg, y = count + 1,
               position = position_jitterdodge(jitter.width = 0.2, 
                                               dodge.width = 0.8),
               size = 3) +
-  scale_y_log10() +
   labs(y = 'Abundance + 1', x = ' ') +
   theme_bw() +
   scale_fill_manual(values = colour) +
@@ -584,7 +594,12 @@ ggplot(spp.long, aes(x = Veg, y = count + 1,
 
 # Figure by species
 
-spp.facet <- ggplot(spp.long, aes(x = Veg, y = count + 1, 
+sp.long <- spp.long %>% 
+  filter(count > 0)
+
+
+
+spp.facet <- ggplot(sp.long, aes(x = Veg, y = count, 
                                   fill = Veg,
                                   shape = Year)) +
   geom_boxplot(lwd = 0.7,
@@ -594,10 +609,9 @@ spp.facet <- ggplot(spp.long, aes(x = Veg, y = count + 1,
   geom_jitter(aes(stroke = 1),
               position = position_jitterdodge(jitter.width = 0.2, 
                                               dodge.width = 0.8),
-              size = 3) +
+              size = 4) +
   facet_wrap(~Species) +
-  scale_y_log10() +
-  labs(y = 'Abundance + 1', x = ' ') +
+  labs(y = 'Abundance', x = ' ') +
   theme_bw() +
   scale_fill_manual(values = colour) +
   scale_shape_manual(values = c(21,24)) +
