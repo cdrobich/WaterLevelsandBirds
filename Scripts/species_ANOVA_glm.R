@@ -217,6 +217,9 @@ shape = c("2014" = 21,
 
 # Univariate figures ------------------------------------------------------
 
+# re-order invasive vs remnanet for reviewer
+
+
 abundance <- ggplot(un.data,
                    aes(x = Veg, y = Ab)) + 
   geom_jitter(
@@ -242,7 +245,8 @@ abundance <- ggplot(un.data,
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
-  ylim(0, 40)
+  ylim(0, 40) +
+  scale_x_discrete(limits = c("Remnant", "Invaded"))
 
 richness <- ggplot(un.data,
                     aes(x = Veg, y = S)) + 
@@ -251,8 +255,9 @@ richness <- ggplot(un.data,
     position = position_jitterdodge(jitter.width = 0.2,
                                     dodge.width = 0.6),
     size = 4.5,
-    stroke = 1.5) +
-  theme_classic() +
+    stroke = 1.5,
+    alpha = 0.8) +
+  theme_bw() +
   stat_summary(
     aes(shape = Year),
     fun.data = "mean_se", fun.args = list(mult = 1),
@@ -268,7 +273,8 @@ richness <- ggplot(un.data,
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
-  ylim(0, 12)
+  ylim(0, 12) +
+  scale_x_discrete(limits = c("Remnant", "Invaded"))
 
 simp <- ggplot(un.data,
                aes(x = Veg, y = I)) + 
@@ -295,7 +301,8 @@ simp <- ggplot(un.data,
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
-  ylim(0,7)
+  ylim(0,7) +
+  scale_x_discrete(limits = c("Remnant", "Invaded"))
 
 shannon <- ggplot(un.data,
                     aes(x = Veg, y = H)) + 
@@ -322,7 +329,8 @@ shannon <- ggplot(un.data,
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14)) +
   theme(legend.position = "blank") +
-  ylim(0,3)
+  ylim(0,3) +
+  scale_x_discrete(limits = c("Remnant", "Invaded"))
 
 
 pielou <- ggplot(un.data,
@@ -352,7 +360,8 @@ pielou <- ggplot(un.data,
         axis.text.y = element_text(size = 14),
         legend.position = "right") +
   guides(fill = "none") +
-  ylim(0, 1)
+  ylim(0, 1) +
+  scale_x_discrete(limits = c("Remnant", "Invaded"))
 
 
 panel <- abundance + richness + shannon + pielou +
@@ -362,16 +371,12 @@ panel
 
 ggsave("Figures/alpha_diversity_abundance.TIFF", panel)
 
-figure2 <- year14 + year15 + 
-  abundance + richness + shannon + pielou +
-  plot_annotation(tag_levels = 'A') + 
-  plot_layout(nrow = 3)
-
-ggsave("Figures/Figure2_iNEXT_uni.TIFF",
-       figure3)
 
 
 # Multivariate figures ----------------------------------------------------
+
+species <- read.csv("Data/matrix_univariate.csv")
+
 
 spp.wide <- species %>% 
   relocate(Veg, .after = VegType) %>% 
@@ -602,10 +607,6 @@ sp.long <- spp.long %>%
 spp.facet <- ggplot(sp.long, aes(x = Veg, y = count, 
                                   fill = Veg,
                                   shape = Year)) +
-  geom_boxplot(lwd = 0.7,
-               width = 0.5,
-               position = position_dodge(0.8),
-               show.legend = F) +
   geom_jitter(aes(stroke = 1),
               position = position_jitterdodge(jitter.width = 0.2, 
                                               dodge.width = 0.8),

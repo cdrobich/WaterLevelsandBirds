@@ -86,7 +86,17 @@ ChaoShannon(remnant)
 #remnant2015    1.807     1.852   0.078     1.807     2.005
 
 t.plot <- ggiNEXT(t, type = 1, se = TRUE, facet.var = "order")+
-  ggtitle("Remnant Vegetation") 
+  ggtitle("Remnant Vegetation") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 12),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.position = "none") +
+  scale_colour_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(18, 15)) +
+  guides(fill ="none") 
 
 # invaded vegetation
 
@@ -110,7 +120,20 @@ ChaoShannon(invaded)
 #invaded2015    1.637     1.681   0.098     1.637     1.872
 
 b.plot <- ggiNEXT(a, type = 1, se = TRUE, facet.var = "order") +
-  ggtitle("Invaded vegetation") 
+  ggtitle("Invaded vegetation") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 12),
+        strip.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.position = "none") +
+  scale_colour_manual(values = c("#fc8d62","#35978f")) +
+  scale_fill_manual(values = c("#fc8d62","#35978f")) +
+  scale_shape_manual(values = c(18, 15)) +
+  guides(fill ="none") +
+  ylim(0, 30) +
+  xlim(0, 220)
+  
 
 plots <- b.plot + t.plot
 
@@ -190,7 +213,9 @@ theme_bw() +
   scale_colour_manual(values = c("#fc8d62","#35978f")) +
   scale_fill_manual(values = c("#fc8d62","#35978f")) +
   scale_shape_manual(values = c(18, 15)) +
-  guides(fill ="none") 
+  guides(fill ="none") +
+  ylim(0, 30)
+
 
 e.plot <- ggiNEXT(e, type = 1, se = TRUE, facet.var = "order")+
   ggtitle("Emergent marsh") +
@@ -203,9 +228,8 @@ theme_bw() +
   scale_colour_manual(values = c("#fc8d62","#35978f")) +
   scale_fill_manual(values = c("#fc8d62","#35978f")) +
   scale_shape_manual(values = c(18, 15)) +
-  guides(fill ="none") 
-
-
+  guides(fill ="none") +
+  ylim(0, 30)
 
 hab.plot <- e.plot + m.plot +
   plot_annotation(tag_levels = "A")
@@ -218,8 +242,67 @@ hab.plot <- b.plot + t.plot + e.plot + m.plot +
 
 ggsave("Figures/habitat_iNEXT.TIFF",
        hab.plot,
-       height = 12,
-       width = 15)
+       height = 10,
+       width = 16)
 
 
 citation("iNEXT")
+
+
+# species accumulation curve ----------------------------------------------
+
+
+# R SAC vignette ----------------------------------------------------------
+
+
+??specaccum
+# from vignette 
+
+data(BCI)
+sp1 <- specaccum(BCI) # exact method - Chiarucci et al 2008, mao tau estimate (Colwell et al. 2012)
+sp2 <- specaccum(BCI, "random") # classic method (Gotelli and Colwell 2001)
+sp2
+summary(sp2)
+
+plot(sp1, ci.type="poly", col="blue", lwd=2, ci.lty=0, ci.col="lightblue")
+boxplot(sp2, col="yellow", add=TRUE, pch="+")
+
+## Fit Lomolino model to the exact accumulation
+mod1 <- fitspecaccum(sp1, "lomolino")
+coef(mod1)
+fitted(mod1)
+plot(sp1)
+
+## Add Lomolino model using argument 'add'
+plot(mod1, add = TRUE, col=2, lwd=2)
+
+## Fit Arrhenius models to all random accumulations
+mods <- fitspecaccum(sp2, "arrh")
+plot(mods, col="hotpink")
+boxplot(sp2, col = "yellow", border = "blue", lty=1, cex=0.3, add= TRUE)
+## Use nls() methods to the list of models
+sapply(mods$models, AIC)
+
+
+
+
+# SAC w/ bir ddata --------------------------------------------------------
+
+species <- read.csv("Data/Species matrix_raw.csv")
+spp <- species %>% select(AMBI:AMRO)
+
+sp1 <- specaccum(spp) # exact method - Chiarucci et al 2008, mao tau estimate (Colwell et al. 2012)
+sp2 <- specaccum(spp, "random") # classic method (Gotelli and Colwell 2001)
+sp2
+summary(sp2)
+
+plot(sp1, ci.type="poly", col="black", lwd=5, ci.lty=0, ci.col="lightblue")
+boxplot(sp2, col="white", add=TRUE)
+
+specslope(sp1, 20)
+
+# at 20 sites
+# 0.3277401
+
+# at 30 sites
+# 0.2274145
