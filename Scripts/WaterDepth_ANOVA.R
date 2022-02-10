@@ -54,18 +54,21 @@ hoc <- HSD.test(waterlevel, "Vegetation.type", group = TRUE, console = TRUE)
 plot(residuals(waterlevel)~fitted(waterlevel))
 
 
-Univariate %>% group_by(Vegetation.type) %>% summarise(Water.avg = mean(Water),
+Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Water),
                                                              Water.sd = sd(Water),
                                                              Water.min = min(Water),
-                                                             Water.max = max(Water))
+                                                             Water.max = max(Water),
+                                                       n = length(Water),
+                                                       sterr = Water.sd/sqrt(n))
 
-# Vegetation.type Year  Water.avg Water.sd Water.min Water.max
-# 1 Meadow          Five      10        6.16         0        16
-# 2 Meadow          Four       0        0            0         0
-# 3 Phragmites      Five      28.2     13.9          5        42
-# 4 Phragmites      Four       6.33     6.02         0        16
-# 5 Typha           Five      31.1      8.15        21        42
-# 6 Typha           Four       9.17    11.3          0        34
+#  Vegetation.type Year  Water.avg Water.sd Water.min Water.max     n sterr
+#1 Invaded         2014       6.33     6.02         0        16     6  2.46
+#2 Invaded         2015      28.2     13.9          5        42     6  5.69
+#3 Meadow          2014       0        0            0         0     6  0   
+#4 Meadow          2015      10        6.16         0        16     6  2.52
+#5 Emergent        2014       9.17    11.3          0        34     8  4.00
+#6 Emergent        2015      31.1      8.15        21        42     8  2.88
+
 
 
 Univariate %>% group_by(Vegetation.type, Year) %>% summarise(Water.avg = mean(Water),
@@ -130,6 +133,18 @@ colnames(erie)
 str(erie)
 
 
+
+erie %>% group_by(Year) %>% 
+  summarise(mean = mean(Average),
+            std = sd(Average),
+            n = length(Average),
+            ser = std/sqrt(n))
+
+#Year       mean    std     n    ser
+#<chr>     <dbl>  <dbl> <int>  <dbl>
+#1 1918-2013  174. 0.0347     4 0.0173
+#2 2014       174. 0.0245     4 0.0122
+#3 2015       175. 0.182      4 0.0908
 
 
 erie$Month <- factor(erie$Month, levels = c("May","June", "July ", "August"))
